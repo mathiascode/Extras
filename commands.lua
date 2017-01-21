@@ -2,6 +2,8 @@
 local Rules = "Do whatever you want! ;)"
 
 -- General
+function None() end
+
 function HandleActionBarBroadcastCommand(Split, Player)
 	if Split[2] == nil then
 		Player:SendMessageInfo("Usage: " .. Split[1] .. " <message ...>")
@@ -82,25 +84,34 @@ end
 function HandleDeopCommand(Split, Player)
 	if Split[2] == nil then
 		Player:SendMessageInfo("Usage: " .. Split[1] .. " <player>")
-		return true
 	else
 		local PlayerName = Split[2]
-		local PlayerUUID
-		if cRoot:Get():GetServer():ShouldAuthenticate() then
-			PlayerUUID = cMojangAPI:GetUUIDFromPlayerName(PlayerName)
-		else
-			PlayerUUID = cClientHandle:GenerateOfflineUUID(PlayerName)
-		end
-		cRankManager:SetPlayerRank(PlayerUUID, PlayerName, "deop")
-		Player:SendMessageSuccess("Successfully removed OP status from player \"" .. Split[2] .. "\"")
+
 		cRoot:Get():ForEachPlayer(
 			function(OtherPlayer)
+				local PlayerUUID
 				if OtherPlayer:GetName() == PlayerName then
-					OtherPlayer:SendMessageInfo("Your OP status has been removed")
+					PlayerUUID = OtherPlayer:GetUUID()
+				elseif cRoot:Get():GetServer():ShouldAuthenticate() then
+					PlayerUUID = cMojangAPI:GetUUIDFromPlayerName(PlayerName)
+				else
+					PlayerUUID = cClientHandle:GenerateOfflineUUID(PlayerName)
+				end
+
+				cRankManager:SetPlayerRank(PlayerUUID, PlayerName, "deop")
+
+				if OtherPlayer:GetName() == PlayerName then
 					OtherPlayer:LoadRank()
+					OtherPlayer:SendMessageInfo("Your OP status has been removed")
 				end
 			end
 		)
+
+		if cRoot:Get():GetServer():ShouldAuthenticate() and cMojangAPI:GetUUIDFromPlayerName(PlayerName) == "" then
+			Player:SendMessageFailure("Player \"" .. PlayerName .. "\" not found")
+		else
+			Player:SendMessageSuccess("Successfully removed OP status from player \"" .. PlayerName .. "\"")
+		end
 	end
 	return true
 end
@@ -193,7 +204,7 @@ function HandleJumpscareCommand(Split, Player)
 	if Split[2] == nil then
 		Player:SendMessageInfo("Usage: ".. Split[1] .." <player>")
 	elseif Split[2] == "*" or Split[2] == "**" then
-		cRoot:Get():ForEachPlayer(CreateJumpscare)
+		cRoot:Get():ForEachPlayer(Jumpscare)
 		Player:SendMessageSuccess("Successfully created jumpscare for every player")
 	elseif not cRoot:Get():FindAndDoWithPlayer(Split[2], Jumpscare) then
 		Player:SendMessageFailure("Player \"" .. Split[2] ..  "\" not found")
@@ -246,6 +257,7 @@ function HandleMeCommand(Split, Player)
 	if Split[2] == nil then
 		Player:SendMessageInfo("Usage: " .. Split[1] .. " <message ...>")
 	else
+		local PlayerName
 		if NickList[Player:GetUUID()] == nil then
 			PlayerName = Player:GetName()
 		else
@@ -259,25 +271,24 @@ function HandleMeCommand(Split, Player)
 end
 
 function HandleMemoryCommand( Split, Player )
-	Player:SendMessageInfo("Current RAM usage: ".. cRoot:GetPhysicalRAMUsage() / 1024 .." MB")
-	Player:SendMessageInfo("Current swap usage: ".. cRoot:GetVirtualRAMUsage() / 1024 .." MB")
-	Player:SendMessageInfo("Total memory usage: ".. cRoot:GetPhysicalRAMUsage() / 1024 + cRoot:GetVirtualRAMUsage() / 1024 .." MB")
-	Player:SendMessageInfo("Current loaded chunks: "..cRoot:Get():GetTotalChunkCount())
+	Player:SendMessageInfo("Current RAM usage: " .. cRoot:GetPhysicalRAMUsage() / 1024 .. " MB")
+	Player:SendMessageInfo("Current swap usage: " .. cRoot:GetVirtualRAMUsage() / 1024 .. " MB")
+	Player:SendMessageInfo("Total memory usage: " .. cRoot:GetPhysicalRAMUsage() / 1024 + cRoot:GetVirtualRAMUsage() / 1024 .. " MB")
+	Player:SendMessageInfo("Current loaded chunks: " .. cRoot:Get():GetTotalChunkCount())
 	return true
 end
 
 function HandleNickCommand(Split, Player)
 	if Split[2] == nil then
-		Player:SendMessageInfo("Usage: "..Split[1].." <nickname ...>")
+		Player:SendMessageInfo("Usage: " .. Split[1] .. " <nickname ...>")
 		return true
 	elseif Split[2] == "off" then
 		Player:SendMessageInfo("You no longer have a nickname")
 		NickList[Player:GetUUID()] = nil
 	else
-		local FinalName = table.concat(Split, " ", 2):gsub("&0", cChatColor.Black):gsub("&1", cChatColor.Navy):gsub("&2", cChatColor.Green):gsub("&3", cChatColor.Blue):gsub("&4", cChatColor.Red):gsub("&5", cChatColor.Purple):gsub("&6", cChatColor.Gold):gsub("&7", cChatColor.LightGray):gsub("&8", cChatColor.Gray):gsub("&9", cChatColor.DarkPurple):gsub("&a", cChatColor.LightGreen):gsub("&b", cChatColor.LightBlue):gsub("&c", cChatColor.Rose):gsub("&d", cChatColor.LightPurple):gsub("&e", cChatColor.Yellow):gsub("&f", cChatColor.White):gsub("&k", cChatColor.Random):gsub("&l", cChatColor.Bold):gsub("&m", cChatColor.Strikethrough):gsub("&n", cChatColor.Underlined):gsub("&o", cChatColor.Italic):gsub("&r", cChatColor.Plain)
+		NickList[Player:GetUUID()] = table.concat(Split, " ", 2):gsub("&0", cChatColor.Black):gsub("&1", cChatColor.Navy):gsub("&2", cChatColor.Green):gsub("&3", cChatColor.Blue):gsub("&4", cChatColor.Red):gsub("&5", cChatColor.Purple):gsub("&6", cChatColor.Gold):gsub("&7", cChatColor.LightGray):gsub("&8", cChatColor.Gray):gsub("&9", cChatColor.DarkPurple):gsub("&a", cChatColor.LightGreen):gsub("&b", cChatColor.LightBlue):gsub("&c", cChatColor.Rose):gsub("&d", cChatColor.LightPurple):gsub("&e", cChatColor.Yellow):gsub("&f", cChatColor.White):gsub("&k", cChatColor.Random):gsub("&l", cChatColor.Bold):gsub("&m", cChatColor.Strikethrough):gsub("&n", cChatColor.Underlined):gsub("&o", cChatColor.Italic):gsub("&r", cChatColor.Plain)
 
-		NickList[Player:GetUUID()] = FinalName
-		Player:SendMessageSuccess("Successfully set your nickname to ".. NickList[Player:GetUUID()])
+		Player:SendMessageSuccess("Successfully set your nickname to " .. NickList[Player:GetUUID()])
 	end
 	return true
 end
@@ -285,25 +296,34 @@ end
 function HandleOpCommand(Split, Player)
 	if Split[2] == nil then
 		Player:SendMessageInfo("Usage: " .. Split[1] .. " <player>")
-		return true
 	else
 		local PlayerName = Split[2]
-		local PlayerUUID
-		if cRoot:Get():GetServer():ShouldAuthenticate() then
-			PlayerUUID = cMojangAPI:GetUUIDFromPlayerName(PlayerName)
-		else
-			PlayerUUID = cClientHandle:GenerateOfflineUUID(PlayerName)
-		end
-		cRankManager:RemovePlayerRank(PlayerUUID)
-		Player:SendMessageSuccess("Successfully added OP status to player \"" .. Split[2] .. "\"")
+
 		cRoot:Get():ForEachPlayer(
 			function(OtherPlayer)
+				local PlayerUUID
 				if OtherPlayer:GetName() == PlayerName then
-					OtherPlayer:SendMessageInfo("You have received OP status")
+					PlayerUUID = OtherPlayer:GetUUID()
+				elseif cRoot:Get():GetServer():ShouldAuthenticate() then
+					PlayerUUID = cMojangAPI:GetUUIDFromPlayerName(PlayerName)
+				else
+					PlayerUUID = cClientHandle:GenerateOfflineUUID(PlayerName)
+				end
+
+				cRankManager:RemovePlayerRank(PlayerUUID)
+
+				if OtherPlayer:GetName() == PlayerName then
 					OtherPlayer:LoadRank()
+					OtherPlayer:SendMessageInfo("You have received OP status")
 				end
 			end
 		)
+
+		if cRoot:Get():GetServer():ShouldAuthenticate() and cMojangAPI:GetUUIDFromPlayerName(PlayerName) == "" then
+			Player:SendMessageFailure("Player \"" .. PlayerName .. "\" not found")
+		else
+			Player:SendMessageSuccess("Successfully given OP status to player \"" .. PlayerName .. "\"")
+		end
 	end
 	return true
 end

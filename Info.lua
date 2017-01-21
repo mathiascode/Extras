@@ -1,10 +1,10 @@
 g_PluginInfo =
 {
 	Name = "Extras",
-	Version = "1.0",
-	Date = "2016-12-31",
+	Version = "1.1",
+	Date = "2017-01-21",
 	SourceLocation = "https://github.com/flameserver/Extras",
-	Description = [[Plugin that adds extra functionality to the Flame.ga server.]],
+	Description = [[Plugin for Cuberite that adds extra functionality to the Flame.ga server.]],
 
 	Commands =
 	{
@@ -326,6 +326,10 @@ g_PluginInfo =
 			Handler = None
 		},
 		["kick"] =
+		{
+			Handler = None
+		},
+		["say"] =
 		{
 			Handler = None
 		},

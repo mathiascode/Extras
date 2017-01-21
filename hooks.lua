@@ -127,6 +127,11 @@ function OnExecuteCommand(Player, CommandSplit, EntireCommand)
 			CanMessage[Player:GetUUID()] = false
 		end
 
+		if CommandSplit[1] == "/ban" or CommandSplit[1] =="/kick" or CommandSplit[1] == "/regen" then
+			Player:SendMessageInfo("Unknown command: \"" .. CommandSplit[1] .. "\"")
+			return true
+		end
+
 		-- Speed limits
 		if CommandSplit[1] == "/speed" and tonumber(CommandSplit[3]) and tonumber(CommandSplit[3]) > 1000 then
 			if CommandSplit[4] ~= nil then
@@ -322,12 +327,15 @@ function OnWorldTick(World, TimeDelta)
 				NukerTime = NukerTime + 1
 			end
 			-- Handles portals in spawn
+			local X = World:GetSpawnX()
+			local Y = World:GetSpawnY()
+			local Z = World:GetSpawnZ()
 			local Position = Player:GetPosition()
-			local HubToEnd = cBoundingBox(Vector3d(-13, 62, -4), Vector3d(-12, 67, 4))
-			local HubToNether = cBoundingBox(Vector3d(13, 62, -4), Vector3d(14, 67, 4))
-			local HubToOverworld = cBoundingBox(Vector3d(-4, 62, -13), Vector3d(4, 67, -12))
-			local OverworldToHub = cBoundingBox(Vector3d(-15, 64, 42), Vector3d(-11, 68, 43))
-			local NetherToHub = cBoundingBox(Vector3d(-62, 51, -93), Vector3d(-61, 55, -89))
+			local HubToEnd = cBoundingBox(Vector3d(X - 14, Y, Z - 3), Vector3d(X - 13, Y + 5, Z + 3))
+			local HubToNether = cBoundingBox(Vector3d(X + 13, Y, Z - 3), Vector3d(X + 14, Y + 5, Z + 3))
+			local HubToOverworld = cBoundingBox(Vector3d(X - 3, Y, Z - 14), Vector3d(X + 3, Y + 5, Z - 13))
+			local OverworldToHub = cBoundingBox(Vector3d(X - 1, Y, Z + 5), Vector3d(X + 1, Y + 4, Z + 6))
+			local NetherToHub = cBoundingBox(Vector3d(X - 6, Y, Z - 1), Vector3d(X - 5, Y + 4, Z + 1))
 			if Player:GetWorld():GetName() == "hubflatlands" then
 				if HubToEnd:IsInside(Position) then
 					Player:SetPitch(0)
@@ -359,9 +367,6 @@ function OnWorldTick(World, TimeDelta)
 			end
 	
 			-- Shows messages about different worlds in the hub
-			local X = World:GetSpawnX()
-			local Y = World:GetSpawnY()
-			local Z = World:GetSpawnZ()
 			local HubWorld = cBoundingBox(Vector3d(X - 5, Y, Z - 5), Vector3d(X + 6, Y + 17, Z + 6))
 			local HubEnd = cBoundingBox(Vector3d(X - 12, Y, Z - 4), Vector3d(X - 5, Y + 17, Z + 5))
 			local HubNether = cBoundingBox(Vector3d(X + 6, Y, Z - 4), Vector3d(X + 13, Y + 17, Z + 5))
