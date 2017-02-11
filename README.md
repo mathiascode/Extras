@@ -1,4 +1,4 @@
-Plugin for Cuberite that adds extra functionality to the Flame.ga server.
+Plugin for Cuberite that adds extra functionality to the Kaboom.pw server.
 
 # Commands
 
