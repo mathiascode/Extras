@@ -1,6 +1,45 @@
 -- Quick settings
 local BuildError = cChatColor.Rose .. "Go further from spawn to build and destroy"
-local SpamError = cChatColor.Rose .. "Please avoid spamming"
+local SpamError = "Please avoid spamming"
+
+CooldownCommands = {
+	"//cyl",
+	"//ellipsoid",
+	"//g",
+	"//gen",
+	"//generate",
+	"//hcyl",
+	"//hpyramid",
+	"//hsphere",
+	"//pyramid",
+	"//replacenear",
+	"//schematic",
+	"//sphere",
+	"/action",
+	"/afk",
+	"/bc",
+	"/broadcast",
+	"/bcast",
+	"/clearchat",
+	"/console",
+	"/describe",
+	"/jumpscare",
+	"/me",
+	"/msg",
+	"/r",
+	"/reload",
+	"/restart",
+	"/say",
+	"/stop",
+	"/tell",
+	"/scare",
+	"/setjail",
+	"/setwarp",
+	"/shout",
+	"/tellraw",
+	"/time",
+	"/whisper",
+}
 
 function GetBlockXYZFromTrace(Player)
 	local World = Player:GetWorld()
@@ -42,7 +81,7 @@ end
 
 function OnChat(Player, Message)
 	if CanMessage[Player:GetUUID()] == false then
-		Player:SendAboveActionBarMessage(SpamError)
+		Player:SendMessageFailure(SpamError)
 		return true
 	else
 		CanMessage[Player:GetUUID()] = false
@@ -119,15 +158,17 @@ function OnExecuteCommand(Player, CommandSplit, EntireCommand)
 	if Player then
 		-- Checks if the player is spamming the specified commands
 		if CanMessage[Player:GetUUID()] == false then
-			if CommandSplit[1] == "/action" or CommandSplit[1] == "/afk" or CommandSplit[1] == "/bc" or CommandSplit[1] == "/broadcast" or CommandSplit[1] == "/bcast" or CommandSplit[1] == "/clearchat" or CommandSplit[1] == "/console" or CommandSplit[1] == "/describe" or CommandSplit[1] == "/jumpscare" or CommandSplit[1] == "/me" or CommandSplit[1] == "/msg" or CommandSplit[1] == "/r" or CommandSplit[1] == "/reload" or CommandSplit[1] == "/restart" or CommandSplit[1] == "/say" or CommandSplit[1] == "/stop" or CommandSplit[1] == "/tell" or CommandSplit[1] == "//schematic" or CommandSplit[1] == "/scare" or CommandSplit[1] == "/setjail" or CommandSplit[1] == "/setwarp" or CommandSplit[1] == "/shout" or CommandSplit[1] == "/tellraw" or CommandSplit[1] == "/time" or CommandSplit[1] == "/whisper" then
-				Player:SendAboveActionBarMessage(SpamError)
-				return true
+			for key,value in pairs(CooldownCommands) do
+				if CommandSplit[1] == value then
+					Player:SendMessageFailure(SpamError)
+					return true
+				end
 			end
 		else
 			CanMessage[Player:GetUUID()] = false
 		end
 
-		if CommandSplit[1] == "/ban" or CommandSplit[1] =="/kick" or CommandSplit[1] == "/regen" then
+		if CommandSplit[1] == "/ban" or CommandSplit[1] == "/kick" or CommandSplit[1] == "/nuke" or CommandSplit[1] == "/regen" then
 			Player:SendMessageInfo("Unknown command: \"" .. CommandSplit[1] .. "\"")
 			return true
 		end
@@ -246,7 +287,7 @@ end
 
 function OnPlayerJoined(Player)
 	cRoot:Get():BroadcastChat(cChatColor.Green.. "(+) " .. cChatColor.LightGreen .. Player:GetName())
-	Player:GetClientHandle():SendSetTitle(cCompositeChat():AddTextPart(cChatColor.Red .. "Welcome to Flame.ga!"))
+	Player:GetClientHandle():SendSetTitle(cCompositeChat():AddTextPart(cChatColor.Red .. "Welcome to Kaboom.pw!"))
 	Player:GetClientHandle():SendSetSubTitle((cCompositeChat():AddTextPart("Do Anything • OP Commands")))
 	Player:GetClientHandle():SendTitleTimes(10, 160, 5)
 	return true
@@ -258,7 +299,7 @@ function OnPlayerDestroyed(Player)
 end
 
 function OnServerPing(ClientHandle, ServerDescription, OnlinePlayers, MaxPlayers)
-	local ServerDescription = "§4§lWelcome to Flame.ga!\n§7A server where you can do anything you want"
+	local ServerDescription = "§4§lWelcome to Kaboom.pw!\n§7A server where you can do anything you want"
 	local MaxPlayers = OnlinePlayers + 1
 	return false, ServerDescription, OnlinePlayers, MaxPlayers
 end

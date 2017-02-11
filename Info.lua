@@ -1,10 +1,10 @@
 g_PluginInfo =
 {
 	Name = "Extras",
-	Version = "1.1",
-	Date = "2017-01-21",
-	SourceLocation = "https://github.com/flameserver/Extras",
-	Description = [[Plugin for Cuberite that adds extra functionality to the Flame.ga server.]],
+	Version = "1.2",
+	Date = "2017-02-11",
+	SourceLocation = "https://github.com/kaboompw/Extras",
+	Description = [[Plugin for Cuberite that adds extra functionality to the Kaboom.pw server.]],
 
 	Commands =
 	{

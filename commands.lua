@@ -571,7 +571,9 @@ function HandleVoteCommand(Split, Player)
 	Player:SendMessageInfo("Feel free to vote for the server by clicking on the links below")
 	Player:SendMessage(cCompositeChat():AddUrlPart(cChatColor.Green.. "[1] " ..cChatColor.LightGreen .. "MinecraftServers.org", "http://minecraftservers.org/vote/153833"))
 	Player:SendMessage(cCompositeChat():AddUrlPart(cChatColor.Green.. "[2] " ..cChatColor.LightGreen .. "TopG.org", "https://topg.org/Minecraft/in-414108"))
-	Player:SendMessage(cCompositeChat():AddUrlPart(cChatColor.Green.. "[3] " ..cChatColor.LightGreen .. "PlanetMinecraft.com", "http://www.planetminecraft.com/server/minecraftga---all-op-server/"))
+	Player:SendMessage(cCompositeChat():AddUrlPart(cChatColor.Green.. "[3] " ..cChatColor.LightGreen .. "Mine Servers", "https://mineservers.com/server/DLwZBVyt/vote"))
+Player:SendMessage(cCompositeChat():AddUrlPart(cChatColor.Green.. "[4] " ..cChatColor.LightGreen .. "Minecraft Servers List", "http://www.minecraft-servers-list.org/index.php?a=in&u=flameserver"))
+	Player:SendMessage(cCompositeChat():AddUrlPart(cChatColor.Green.. "[5] " ..cChatColor.LightGreen .. "MC Index", "http://www.minecraft-index.com/54824-flame-ga-8211-free-op-server/vote"))
 	return true 
 end
 
