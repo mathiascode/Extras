@@ -1,9 +1,9 @@
 g_PluginInfo =
 {
 	Name = "Extras",
-	Version = "1.2",
-	Date = "2017-02-11",
-	SourceLocation = "https://github.com/kaboompw/Extras",
+	Version = "1.3",
+	Date = "2017-02-21",
+	SourceLocation = "https://github.com/mathiascode/Extras",
 	Description = [[Plugin for Cuberite that adds extra functionality to the Kaboom.pw server.]],
 
 	Commands =
@@ -286,6 +286,13 @@ g_PluginInfo =
 			Handler = HandleTpposCommand,
 			Permission = "extras.tppos",
 			HelpString = "Teleports you directly to the specified coordinates"
+		},
+		["/trail"] =
+		{
+			Alias = "/particletrail",
+			Handler = HandleTrailCommand,
+			Permission = "extras.trail",
+			HelpString = "Creates a particle trail behind you"
 		},
 		["/unloadchunks"] =
 		{

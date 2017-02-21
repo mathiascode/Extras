@@ -2,7 +2,7 @@
 local BuildError = cChatColor.Rose .. "Go further from spawn to build and destroy"
 local SpamError = "Please avoid spamming"
 
-CooldownCommands = {
+local CooldownCommands = GetValue {
 	"//cyl",
 	"//ellipsoid",
 	"//g",
@@ -157,13 +157,9 @@ end
 function OnExecuteCommand(Player, CommandSplit, EntireCommand)
 	if Player then
 		-- Checks if the player is spamming the specified commands
-		if CanMessage[Player:GetUUID()] == false then
-			for key,value in pairs(CooldownCommands) do
-				if CommandSplit[1] == value then
-					Player:SendMessageFailure(SpamError)
-					return true
-				end
-			end
+		if CanMessage[Player:GetUUID()] == false and CooldownCommands[CommandSplit[1]] then
+			Player:SendMessageFailure(SpamError)
+			return true
 		else
 			CanMessage[Player:GetUUID()] = false
 		end
@@ -287,7 +283,7 @@ end
 
 function OnPlayerJoined(Player)
 	cRoot:Get():BroadcastChat(cChatColor.Green.. "(+) " .. cChatColor.LightGreen .. Player:GetName())
-	Player:GetClientHandle():SendSetTitle(cCompositeChat():AddTextPart(cChatColor.Red .. "Welcome to Kaboom.pw!"))
+	Player:GetClientHandle():SendSetTitle(cCompositeChat():AddTextPart(cChatColor.LightGray .. "Welcome to Kaboom.pw!"))
 	Player:GetClientHandle():SendSetSubTitle((cCompositeChat():AddTextPart("Do Anything • OP Commands")))
 	Player:GetClientHandle():SendTitleTimes(10, 160, 5)
 	return true
@@ -299,7 +295,7 @@ function OnPlayerDestroyed(Player)
 end
 
 function OnServerPing(ClientHandle, ServerDescription, OnlinePlayers, MaxPlayers)
-	local ServerDescription = "§4§lWelcome to Kaboom.pw!\n§7A server where you can do anything you want"
+	local ServerDescription = "§8§lWelcome to Kaboom.pw!\n§fA server where you can do anything you want"
 	local MaxPlayers = OnlinePlayers + 1
 	return false, ServerDescription, OnlinePlayers, MaxPlayers
 end
@@ -313,14 +309,14 @@ function OnSpawningEntity(World, Entity)
 		end
 	)
 
-	--if Entity:IsMob() then
-	--	MobCount = MobCount + 1
-	--	if MobCount > 20 then
-	--		return true
-	--	end
-	--end
+	if Entity:IsMob() then
+		MobCount = MobCount + 1
+		if MobCount > 20 then
+			return true
+		end
+	end
 
-	if Entity:IsPickup() or Entity:IsMob() then
+	if Entity:IsPickup() then
 		return true
 	end
 
@@ -341,7 +337,7 @@ function OnTick(TimeDelta)
 		-- Resets different checks
 		ExplosionCount = 0
 		GlobalTime = 0
-		--MobCount = 0
+		MobCount = 0
 		cRoot:Get():ForEachPlayer(
 			function(Player)
 				CanMessage[Player:GetUUID()] = true
@@ -360,6 +356,10 @@ end
 function OnWorldTick(World, TimeDelta)
 	World:ForEachPlayer(
 		function(Player)
+			-- Creates particles around the player
+			if ParticlePlayers[Player:GetUUID()] ~= nil then
+				Player:GetWorld():BroadcastParticleEffect(ParticlePlayers[Player:GetUUID()], Player:GetPosX(), Player:GetPosY(), Player:GetPosZ(), 0.5, 1, 0.5, math.random(0, 10), 10)
+			end
 			-- Checks if player is using nuker in spawn
 			if NukerTime == 1 then
 				BreakTime = 0

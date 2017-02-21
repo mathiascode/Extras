@@ -48,6 +48,7 @@ Plugin for Cuberite that adds extra functionality to the Kaboom.pw server.
 |/tele | extras.teleport | Teleports you to another player|
 |/tellraw | extras.tellraw | Broadcasts raw text to the server|
 |/tppos | extras.tppos | Teleports you directly to the specified coordinates|
+|/trail | extras.trail | Creates a particle trail behind you|
 |/unloadchunks | extras.unloadchunks | Unloads all unused chunks|
 |/username | extras.username | Changes your username on the server|
 |/vote | extras.vote | Shows vote links for the server|
@@ -105,6 +106,7 @@ Plugin for Cuberite that adds extra functionality to the Kaboom.pw server.
 | extras.teleport |  | `/tele` |  |
 | extras.tellraw |  | `/tellraw` |  |
 | extras.tppos |  | `/tppos` |  |
+| extras.trail |  | `/trail` |  |
 | extras.unloadchunks |  | `/unloadchunks` |  |
 | extras.username |  | `/username` |  |
 | extras.vote |  | `/vote` |  |

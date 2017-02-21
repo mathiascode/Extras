@@ -2,7 +2,15 @@
 local Rules = "Do whatever you want! ;)"
 
 -- General
-function None() end
+function GetValue(list)
+	local value = {}
+	for k, v in ipairs(list) do 
+		value[v] = true
+	end
+	return value
+end
+
+local ParticleTypes = GetValue { "explode", "fireworksspark", "bubble", "splash", "wake", "suspended", "depthsuspend", "crit", "magiccrit", "smoke", "largesmoke", "spell", "instantspell", "mobspell", "mobspellambient", "witchmagic", "dripwater", "driplava", "angryvillager", "happyvillager", "townaura", "note", "portal", "enchantmenttable", "flame", "lava", "footstep", "reddust", "snowballpoof", "slime", "heart", "barrier", "cloud", "snowshovel", "droplet", "ironcrack", "blockcrack", "blockdust", "endrod", "dragonbreath", "sweepattack", "spit", "totem" }
 
 function HandleActionBarBroadcastCommand(Split, Player)
 	if Split[2] == nil then
@@ -540,6 +548,29 @@ function HandleTellrawCommand(Split, Player)
 	return true
 end
 
+function HandleTrailCommand(Split, Player)
+	if Split[2] == nil then
+		local ListParticles = ""
+		for key, value in pairs(ParticleTypes) do
+			ListParticles = ListParticles .. key .. ", "
+		end
+		Player:SendMessageInfo("Usage: " .. Split[1] .. " <particle>")
+		Player:SendMessageInfo("Available particles: " .. ListParticles:sub(1, ListParticles:len() - 2))
+	elseif Split[2] == "off" then
+		ParticlePlayers[Player:GetUUID()] = nil
+		Player:SendMessageInfo("You no longer have a particle trail")
+	else
+		if ParticleTypes[Split[2]] then
+			ParticlePlayers[Player:GetUUID()] = Split[2]
+			Player:SendMessageSuccess("You now have a particle trail")
+		else
+			Player:SendMessageFailure("Invalid particle name")
+		end
+		return true
+	end
+	return true
+end
+
 function HandleUnloadchunksCommand(Split, Player)
 	cRoot:Get():SaveAllChunks()
 	local UnloadChunks = function(World)
@@ -573,7 +604,7 @@ function HandleVoteCommand(Split, Player)
 	Player:SendMessage(cCompositeChat():AddUrlPart(cChatColor.Green.. "[2] " ..cChatColor.LightGreen .. "TopG.org", "https://topg.org/Minecraft/in-414108"))
 	Player:SendMessage(cCompositeChat():AddUrlPart(cChatColor.Green.. "[3] " ..cChatColor.LightGreen .. "Mine Servers", "https://mineservers.com/server/DLwZBVyt/vote"))
 Player:SendMessage(cCompositeChat():AddUrlPart(cChatColor.Green.. "[4] " ..cChatColor.LightGreen .. "Minecraft Servers List", "http://www.minecraft-servers-list.org/index.php?a=in&u=flameserver"))
-	Player:SendMessage(cCompositeChat():AddUrlPart(cChatColor.Green.. "[5] " ..cChatColor.LightGreen .. "MC Index", "http://www.minecraft-index.com/54824-flame-ga-8211-free-op-server/vote"))
+	Player:SendMessage(cCompositeChat():AddUrlPart(cChatColor.Green.. "[5] " ..cChatColor.LightGreen .. "MC Index", "https://www.minecraft-index.com/54824/vote"))
 	return true 
 end
 
