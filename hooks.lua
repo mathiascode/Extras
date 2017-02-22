@@ -41,15 +41,6 @@ local CooldownCommands = GetValue {
 	"/whisper",
 }
 
-function GetBlockXYZFromTrace(Player)
-	local World = Player:GetWorld()
-	local Tracer = cTracer(World)
-	local EyePos = Vector3f(Player:GetEyePosition().x, Player:GetEyePosition().y, Player:GetEyePosition().z)
-	local EyeVector = Vector3f(Player:GetLookVector().x, Player:GetLookVector().y, Player:GetLookVector().z)
-	Tracer:Trace(EyePos , EyeVector, 9999)
-	return Tracer.BlockHitPosition.x, Tracer.BlockHitPosition.y, Tracer.BlockHitPosition.z
-end
-
 function GetPlayerLookPos(Player)
 	local World = Player:GetWorld()
 	local Tracer = cTracer(World)
@@ -259,15 +250,6 @@ function OnPlayerPlacingBlock(Player, BlockX, BlockY, BlockZ, BlockFace, CursorX
 end
 
 function OnPlayerRightClick(Player, BlockX, BlockY, BlockZ, BlockFace, CursorX, CursorY, CursorZ)
-	local LookPos = GetBlockXYZFromTrace(Player)
-	if Player:GetEquippedItem().m_ItemType == E_ITEM_STICK then
-		if LookPos == 0 then
-			Player:GetWorld():CastThunderbolt(Player:GetPosX(), Player:GetPosY() + 20, Player:GetPosZ())
-		else
-			Player:GetWorld():CastThunderbolt(GetBlockXYZFromTrace(Player))
-		end
-	end
-
 	if IsInSpawn(BlockX, BlockY, BlockZ, Player:GetWorld():GetName()) then
 		if Player:GetWorld():GetBlock(BlockX, BlockY, BlockZ) == E_BLOCK_GRASS or Player:GetWorld():GetBlock(BlockX, BlockY, BlockZ) == E_BLOCK_DIRT or Player:GetEquippedItem().m_ItemType == E_ITEM_FLINT_AND_STEEL or Player:GetEquippedItem().m_ItemType == E_ITEM_FIRE_CHARGE then
 			Player:SendAboveActionBarMessage(BuildError)
@@ -290,6 +272,7 @@ function OnPlayerJoined(Player)
 end
 
 function OnPlayerDestroyed(Player)
+	ParticlePlayers[Player:GetUUID()] = nil
 	cRoot:Get():BroadcastChat(cChatColor.Red.. "(-) " .. cChatColor.Rose .. Player:GetName()) 
 	return true
 end
@@ -357,8 +340,10 @@ function OnWorldTick(World, TimeDelta)
 	World:ForEachPlayer(
 		function(Player)
 			-- Creates particles around the player
-			if ParticlePlayers[Player:GetUUID()] ~= nil then
-				Player:GetWorld():BroadcastParticleEffect(ParticlePlayers[Player:GetUUID()], Player:GetPosX(), Player:GetPosY(), Player:GetPosZ(), 0.5, 1, 0.5, math.random(0, 10), 10)
+			if ParticlePlayers[Player:GetUUID()] == "note" then
+				Player:GetWorld():BroadcastParticleEffect("note", Player:GetPosX(), Player:GetPosY(), Player:GetPosZ(), 0.5, 1, 0.5, math.random(1, 16), 10)
+			elseif ParticlePlayers[Player:GetUUID()] ~= nil then
+				Player:GetWorld():BroadcastParticleEffect(ParticlePlayers[Player:GetUUID()], Player:GetPosX(), Player:GetPosY(), Player:GetPosZ(), 0.5, 1, 0.5, 0, 10)
 			end
 			-- Checks if player is using nuker in spawn
 			if NukerTime == 1 then

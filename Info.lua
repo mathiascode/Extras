@@ -1,8 +1,8 @@
 g_PluginInfo =
 {
 	Name = "Extras",
-	Version = "1.3",
-	Date = "2017-02-21",
+	Version = "1.3.1",
+	Date = "2017-02-22",
 	SourceLocation = "https://github.com/mathiascode/Extras",
 	Description = [[Plugin for Cuberite that adds extra functionality to the Kaboom.pw server.]],
 

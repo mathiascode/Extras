@@ -10,7 +10,7 @@ function GetValue(list)
 	return value
 end
 
-local ParticleTypes = GetValue { "explode", "fireworksspark", "bubble", "splash", "wake", "suspended", "depthsuspend", "crit", "magiccrit", "smoke", "largesmoke", "spell", "instantspell", "mobspell", "mobspellambient", "witchmagic", "dripwater", "driplava", "angryvillager", "happyvillager", "townaura", "note", "portal", "enchantmenttable", "flame", "lava", "footstep", "reddust", "snowballpoof", "slime", "heart", "barrier", "cloud", "snowshovel", "droplet", "ironcrack", "blockcrack", "blockdust", "endrod", "dragonbreath", "sweepattack", "spit", "totem" }
+local ParticleTypes = GetValue { "explode", "largeexplode", "fireworksspark", "bubble", "splash", "wake", "suspended", "depthsuspend", "crit", "magiccrit", "smoke", "largesmoke", "spell", "instantspell", "mobspell", "mobspellambient", "witchmagic", "dripwater", "driplava", "angryvillager", "happyvillager", "townaura", "note", "portal", "enchantmenttable", "flame", "lava", "footstep", "reddust", "snowballpoof", "slime", "heart", "barrier", "cloud", "snowshovel", "droplet", "endrod", "dragonbreath", "sweepattack", "spit", "totem" }
 
 function HandleActionBarBroadcastCommand(Split, Player)
 	if Split[2] == nil then
@@ -134,33 +134,7 @@ function HandleEnchantAllCommand(Split, Player)
 	if Player:GetEquippedItem():IsEmpty() then
 		Player:SendMessageFailure("Please hold an item in your hand to enchant it")
 	else
-		local ItemEnchant = Player:GetEquippedItem().m_Enchantments
-		ItemEnchant:SetLevel(0, 1000)
-		ItemEnchant:SetLevel(1, 1000)
-		ItemEnchant:SetLevel(2, 1000)
-		ItemEnchant:SetLevel(3, 1000)
-		ItemEnchant:SetLevel(4, 1000)
-		ItemEnchant:SetLevel(5, 1000)
-		ItemEnchant:SetLevel(6, 1000)
-		ItemEnchant:SetLevel(7, 1000)
-		ItemEnchant:SetLevel(8, 1000)
-		ItemEnchant:SetLevel(16, 1000)
-		ItemEnchant:SetLevel(17, 1000)
-		ItemEnchant:SetLevel(18, 1000)
-		ItemEnchant:SetLevel(19, 1000)
-		ItemEnchant:SetLevel(20, 1000)
-		ItemEnchant:SetLevel(21, 1000)
-		ItemEnchant:SetLevel(32, 1000)
-		ItemEnchant:SetLevel(33, 1000)
-		ItemEnchant:SetLevel(34, 1000)
-		ItemEnchant:SetLevel(35, 1000)
-		ItemEnchant:SetLevel(48, 1000)
-		ItemEnchant:SetLevel(49, 1000)
-		ItemEnchant:SetLevel(50, 1000)
-		ItemEnchant:SetLevel(51, 1000)
-		ItemEnchant:SetLevel(61, 1000)
-		ItemEnchant:SetLevel(62, 1000)
-		ItemEnchant:SetLevel(70, 1000)
+		Player:GetEquippedItem().m_Enchantments:AddFromString("0=1000;1=1000;2=1000;3=1000;4=1000;5=1000;6=1000;7=1000;8=1000;16=1000;17=1000;18=1000;19=1000;20=1000;21=1000;32=1000;33=1000;34=1000;35=1000;48=1000;49=1000;50=1000;51=1000;61=1000;62=1000;70=1000;")
 		Player:GetInventory():SetHotbarSlot(Player:GetInventory():GetEquippedSlotNum(), Player:GetEquippedItem())
 		Player:SendMessageSuccess("You have all those enchantments now. ;)")
 	end
@@ -221,38 +195,59 @@ function HandleJumpscareCommand(Split, Player)
 end
 
 function HandleKitCommand(Split, Player)
-	local Kit = function(OtherPlayer)
-		if Split[2] == "weapons" then
-			local Item = cItem(E_ITEM_BLAZE_ROD)
-			Item.m_CustomName = "§rNuker"
-			Item.m_Lore = "§cBOOM!"
-			OtherPlayer:GetInventory():AddItem(Item)
-
-			local Item = cItem(E_ITEM_STICK)
-			Item.m_CustomName = "§rLightning Stick"
-			Item.m_Lore = "§eSmite those fools!"
-			OtherPlayer:GetInventory():AddItem(Item)
-
-			local Item = cItem(E_ITEM_DIAMOND_HORSE_ARMOR)
-			Item.m_CustomName = "§rSniper"
-			Item.m_Lore = "§rSneaky!"
-			OtherPlayer:GetInventory():AddItem(Item)
+	local GiveKit = function(OtherPlayer)
+		local function Info()
 			OtherPlayer:SendMessageInfo("You have received kit \"" .. Split[2] .. "\"")
 			if Split[3] ~= nil and Split[3] ~= "*" and Split[3] ~= "**" then
 				Player:SendMessageSuccess("Successfully gave kit \"" .. Split[2] .. "\" to player \"" .. OtherPlayer:GetName() .. "\"")
 			end
+		end
+		if Split[2] == "griefer" then
+			for i=1,5 do
+				OtherPlayer:GetInventory():AddItem(cItem(E_BLOCK_TNT, 64, 0, "", "§rKABOOM"))
+			end
+			OtherPlayer:GetInventory():AddItem(cItem(E_ITEM_FLINT_AND_STEEL, 1, 0))
+			OtherPlayer:GetInventory():AddItem(cItem(E_ITEM_LAVA_BUCKET, 1, 0))
+			OtherPlayer:GetInventory():AddItem(cItem(E_ITEM_CHAIN_HELMET, 1, 0))
+			OtherPlayer:GetInventory():AddItem(cItem(E_ITEM_CHAIN_CHESTPLATE, 1, 0))
+			OtherPlayer:GetInventory():AddItem(cItem(E_ITEM_CHAIN_LEGGINGS, 1, 0))
+			OtherPlayer:GetInventory():AddItem(cItem(E_ITEM_CHAIN_BOOTS, 1, 0))
+			Info()
+		elseif Split[2] == "op" then
+			local Enchantments = "0=1000;1=1000;2=1000;3=1000;4=1000;5=1000;6=1000;7=1000;8=1000;16=1000;17=1000;18=1000;19=1000;20=1000;21=1000;32=1000;33=1000;34=1000;35=1000;48=1000;49=1000;50=1000;51=1000;61=1000;62=1000;70=1000;"
+			OtherPlayer:GetInventory():AddItem(cItem(E_ITEM_DIAMOND_SWORD, 1, 0, Enchantments))
+			OtherPlayer:GetInventory():AddItem(cItem(E_ITEM_BOW, 1, 0, Enchantments))
+			OtherPlayer:GetInventory():AddItem(cItem(E_ITEM_DIAMOND_PICKAXE, 1, 0, Enchantments))
+			OtherPlayer:GetInventory():AddItem(cItem(E_ITEM_DIAMOND_AXE, 1, 0, Enchantments))
+			OtherPlayer:GetInventory():AddItem(cItem(E_ITEM_DIAMOND_SHOVEL, 1, 0, Enchantments))
+			OtherPlayer:GetInventory():AddItem(cItem(E_ITEM_DIAMOND_HOE, 1, 0, Enchantments))
+			for i=1,2 do
+				OtherPlayer:GetInventory():AddItem(cItem(E_ITEM_ARROW, 64, 0))
+			end
+			OtherPlayer:GetInventory():AddItem(cItem(E_ITEM_GOLDEN_APPLE, 1, 0, Enchantments))
+			OtherPlayer:GetInventory():AddItem(cItem(E_ITEM_DIAMOND_HELMET, 1, 0, Enchantments))
+			OtherPlayer:GetInventory():AddItem(cItem(E_ITEM_DIAMOND_CHESTPLATE, 1, 0, Enchantments))
+			OtherPlayer:GetInventory():AddItem(cItem(E_ITEM_DIAMOND_LEGGINGS, 1, 0, Enchantments))
+			OtherPlayer:GetInventory():AddItem(cItem(E_ITEM_DIAMOND_BOOTS, 1, 0, Enchantments))
+			Info()
+		elseif Split[2] == "weapons" then
+			OtherPlayer:GetInventory():AddItem(cItem(E_BLOCK_ANVIL, 1, 0, "", "§8Anvil Dropper"))
+			OtherPlayer:GetInventory():AddItem(cItem(E_ITEM_BLAZE_ROD, 1, 0, "", "§6Nuker"))
+			OtherPlayer:GetInventory():AddItem(cItem(E_ITEM_STICK, 1, 0, "", "§fLightning Stick"))
+			OtherPlayer:GetInventory():AddItem(cItem(E_ITEM_IRON_HORSE_ARMOR, 1, 0, "", "§7Sniper"))
+			Info()
 		else
 			Player:SendMessageFailure("Invalid kit")
 		end
 	end
 	if Split[2] == nil then
 		Player:SendMessageInfo("Usage: " .. Split[1] .. " <name> [player]")
-		Player:SendMessageInfo("Available kits: weapons")
+		Player:SendMessageInfo("Available kits: griefer, op, weapons")
 	elseif Split[3] == nil then
-		Kit(Player)
+		GiveKit(Player)
 	elseif Player:HasPermission("extras.kit.other") then
 		if Split[3] == "*" or Split[3] == "**" then
-			cRoot:Get():ForEachPlayer(Kit)
+			cRoot:Get():ForEachPlayer(GiveKit)
 			Player:SendMessageSuccess("Successfully gave kit \"" .. Split[2] .. "\" to every player")
 		elseif not cRoot:Get():FindAndDoWithPlayer(Split[3], Kit) then
 			Player:SendMessageFailure("Player \"" .. Split[3] .. "\" not found")
