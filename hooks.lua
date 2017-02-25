@@ -4,17 +4,23 @@ local SpamError = "Please avoid spamming"
 
 local CooldownCommands = GetValue {
 	"//cyl",
+	"//drain",
 	"//ellipsoid",
+	"//expand",
 	"//g",
 	"//gen",
 	"//generate",
+	"//green",
 	"//hcyl",
 	"//hpyramid",
 	"//hsphere",
 	"//pyramid",
 	"//replacenear",
+	"//schem",
 	"//schematic",
+	"//snow",
 	"//sphere",
+	"//thaw",
 	"/action",
 	"/afk",
 	"/bc",
@@ -23,15 +29,19 @@ local CooldownCommands = GetValue {
 	"/clearchat",
 	"/console",
 	"/describe",
+	"/green",
 	"/jumpscare",
 	"/me",
 	"/msg",
+	"/pumpkins",
 	"/r",
 	"/reload",
 	"/restart",
 	"/say",
+	"/snow",
 	"/stop",
 	"/tell",
+	"/thaw",
 	"/scare",
 	"/setjail",
 	"/setwarp",
@@ -173,9 +183,9 @@ function OnExecuteCommand(Player, CommandSplit, EntireCommand)
 		-- Handles WorldEdit radius limits and invalid blocks
 		local Item = cItem()
 
-		if CommandSplit[1] == "//drain" or CommandSplit[1] == "//ex" or CommandSplit[1] == "//extinguish" or CommandSplit[1] == "//green" or CommandSplit[1] == "//replacenear" or CommandSplit[1] == "/ex" or CommandSplit[1] == "/thaw" or CommandSplit[1] == "/snow" then
-			if tonumber(CommandSplit[2]) and tonumber(CommandSplit[2]) > 50 then
-				Player:SendMessageFailure("Please reduce the radius to 50 or below")
+		if CommandSplit[1] == "//drain" or CommandSplit[1] == "//ex" or CommandSplit[1] == "//expand" or CommandSplit[1] == "//ext" or CommandSplit[1] == "//extinguish" or CommandSplit[1] == "//green" or CommandSplit[1] == "//replacenear" or CommandSplit[1] == "//thaw" or CommandSplit[1] == "/ex" or CommandSplit[1] == "/green" or CommandSplit[1] == "/pumpkins" or CommandSplit[1] == "/replacenear" or CommandSplit[1] == "/thaw" or CommandSplit[1] == "/snow" then
+			if tonumber(CommandSplit[2]) and tonumber(CommandSplit[2]) > 25 then
+				Player:SendMessageFailure("Please reduce the radius to 25 or below")
 				return true
 			end
 		end
@@ -183,8 +193,8 @@ function OnExecuteCommand(Player, CommandSplit, EntireCommand)
 		if CommandSplit[1] == "//sphere" or CommandSplit[1] == "//hsphere" or CommandSplit[1] == "//cyl" or CommandSplit[1] == "//hcyl" or CommandSplit[1] == "//pyramid" or CommandSplit[1] == "//hpyramid" then
 			local Radius = StringSplit(CommandSplit[3], ",")
 			for i = 1, 3 do
-				if tonumber(Radius[I]) and tonumber(Radius[i]) > 50 then
-					Player:SendMessageFailure("Please reduce the radius to 50 or below")
+				if tonumber(Radius[i]) and tonumber(Radius[i]) > 25 then
+					Player:SendMessageFailure("Please reduce the radius to 25 or below")
 					return true
 				end
 			end
@@ -194,16 +204,22 @@ function OnExecuteCommand(Player, CommandSplit, EntireCommand)
 			end
 		end
 
-		if CommandSplit[1] == "//replacenear" and StringToItem(CommandSplit[3], Item) then
-			if Item.m_ItemType == 46 or Item.m_ItemType > 255 then
+		if CommandSplit[1] == "//re" or CommandSplit[1] == "//rep" or CommandSplit[1] == "//replace" then
+			if StringToItem(CommandSplit[2], Item) and Item.m_ItemType == 46 or StringToItem(CommandSplit[2], Item) and Item.m_ItemType > 255 then
 				Player:SendMessage(cChatColor.Rose .. "Unknown src block type: '" .. CommandSplit[2] .. "'.")
+				return true
+			elseif StringToItem(CommandSplit[3], Item) and Item.m_ItemType == 46 or StringToItem(CommandSplit[3], Item) and Item.m_ItemType > 255 then
+				Player:SendMessage(cChatColor.Rose .. "Unknown dst block type: '" .. CommandSplit[3] .. "'.")
 				return true
 			end
 		end
 
-		if CommandSplit[1] == "//replacenear" and StringToItem(CommandSplit[4], Item) then
-			if Item.m_ItemType == 46 or Item.m_ItemType > 255 then
-				Player:SendMessage(cChatColor.Rose .. "Unknown dst block type: '" .. CommandSplit[2] .. "'.")
+		if CommandSplit[1] == "//replacenear" or CommandSplit[1] == "/replacenear" then
+			if StringToItem(CommandSplit[3], Item) and Item.m_ItemType == 46 or StringToItem(CommandSplit[3], Item) and Item.m_ItemType > 255 then
+				Player:SendMessage(cChatColor.Rose .. "Unknown src block type: '" .. CommandSplit[3] .. "'.")
+				return true
+			elseif StringToItem(CommandSplit[4], Item) and Item.m_ItemType == 46 or StringToItem(CommandSplit[4], Item) and Item.m_ItemType > 255 then
+				Player:SendMessage(cChatColor.Rose .. "Unknown dst block type: '" .. CommandSplit[4] .. "'.")
 				return true
 			end
 		end
@@ -278,7 +294,7 @@ function OnPlayerDestroyed(Player)
 end
 
 function OnServerPing(ClientHandle, ServerDescription, OnlinePlayers, MaxPlayers)
-	local ServerDescription = "§8§lWelcome to Kaboom.pw!\n§fA server where you can do anything you want"
+	local ServerDescription = ServerDescription:gsub("	", "\n")
 	local MaxPlayers = OnlinePlayers + 1
 	return false, ServerDescription, OnlinePlayers, MaxPlayers
 end
@@ -334,6 +350,14 @@ function OnTick(TimeDelta)
 	else
 		GlobalTime = GlobalTime + 1
 	end
+end
+
+function OnUpdatingSign(World, BlockX, BlockY, BlockZ, Line1, Line2, Line3, Line4, Player)
+	local Line1 = string.sub(Line1, 1, 45)
+	local Line2 = string.sub(Line2, 1, 45)
+	local Line3 = string.sub(Line3, 1, 45)
+	local Line4 = string.sub(Line4, 1, 45)
+	return false, Line1, Line2, Line3, Line4
 end
 
 function OnWorldTick(World, TimeDelta)

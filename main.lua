@@ -23,6 +23,7 @@ function Initialize(Plugin)
 	cPluginManager:AddHook(cPluginManager.HOOK_SERVER_PING, OnServerPing)
 	cPluginManager:AddHook(cPluginManager.HOOK_SPAWNING_ENTITY, OnSpawningEntity)
 	cPluginManager:AddHook(cPluginManager.HOOK_TICK, OnTick)
+	cPluginManager:AddHook(cPluginManager.HOOK_UPDATING_SIGN, OnUpdatingSign)
 	cPluginManager:AddHook(cPluginManager.HOOK_WORLD_TICK, OnWorldTick)
 
 	dofile(cPluginManager:GetPluginsPath() .. "/InfoReg.lua")

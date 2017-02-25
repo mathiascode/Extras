@@ -1,8 +1,8 @@
 g_PluginInfo =
 {
 	Name = "Extras",
-	Version = "1.3.1",
-	Date = "2017-02-22",
+	Version = "1.4",
+	Date = "2017-02-26",
 	SourceLocation = "https://github.com/mathiascode/Extras",
 	Description = [[Plugin for Cuberite that adds extra functionality to the Kaboom.pw server.]],
 
@@ -199,6 +199,7 @@ g_PluginInfo =
 		["/op"] =
 		{
 			Handler = HandleOpCommand,
+			Permission = "extras.op",
 			HelpString = "Gives a player operator permissions"
 		},
 		["/overworld"] =

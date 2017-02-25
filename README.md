@@ -34,7 +34,7 @@ Plugin for Cuberite that adds extra functionality to the Kaboom.pw server.
 |/nether | extras.nether | Moves your player to the Nether|
 |/nickname | extras.nickname | Changes your nickname on the server|
 |/night | extras.night | Sets the time to night|
-|/op |  | Gives a player operator permissions|
+|/op | extras.op | Gives a player operator permissions|
 |/overworld | extras.overworld | Moves your player to the Overworld|
 |/pumpkin | extras.pumpkin | Places a pumpkin on a player's head|
 |/reload | extras.reload | Reloads all plugins|
@@ -89,6 +89,7 @@ Plugin for Cuberite that adds extra functionality to the Kaboom.pw server.
 | extras.nether |  | `/nether` |  |
 | extras.nickname |  | `/nickname` |  |
 | extras.night |  | `/night` |  |
+| extras.op |  | `/op` |  |
 | extras.overworld |  | `/overworld` |  |
 | extras.pumpkin |  | `/pumpkin` |  |
 | extras.reload |  | `/reload` |  |

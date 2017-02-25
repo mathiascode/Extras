@@ -202,7 +202,16 @@ function HandleKitCommand(Split, Player)
 				Player:SendMessageSuccess("Successfully gave kit \"" .. Split[2] .. "\" to player \"" .. OtherPlayer:GetName() .. "\"")
 			end
 		end
-		if Split[2] == "griefer" then
+		if Split[2] == "fireworks" then
+			Item = cItem()
+			Item.m_ItemType = E_ITEM_FIREWORK_ROCKET
+			Item.m_ItemCount = 1
+			Item.m_FireworkItem.m_HasTrail = true
+			Item.m_FireworkItem.m_Colours = "11111"
+			OtherPlayer:GetInventory():AddItem(Item)
+			OtherPlayer:SendMessage(Item.m_CustomName)
+			Info()
+		elseif Split[2] == "griefer" then
 			for i=1,5 do
 				OtherPlayer:GetInventory():AddItem(cItem(E_BLOCK_TNT, 64, 0, "", "§rKABOOM"))
 			end
