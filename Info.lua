@@ -1,8 +1,8 @@
 g_PluginInfo =
 {
 	Name = "Extras",
-	Version = "1.4",
-	Date = "2017-02-26",
+	Version = "1.5",
+	Date = "2017-03-26",
 	SourceLocation = "https://github.com/mathiascode/Extras",
 	Description = [[Plugin for Cuberite that adds extra functionality to the Kaboom.pw server.]],
 
@@ -331,15 +331,15 @@ g_PluginInfo =
 	{
 		["ban"] =
 		{
-			Handler = None
+			Handler = block
 		},
 		["kick"] =
 		{
-			Handler = None
+			Handler = block
 		},
 		["say"] =
 		{
-			Handler = None
+			Handler = block
 		},
 	},
 	Permissions =

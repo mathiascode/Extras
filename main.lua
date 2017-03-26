@@ -2,11 +2,11 @@ CanBreak = {}
 CanMessage = {}
 NickList = {}
 ParticlePlayers = {}
+IsInside = {}
 ExplosionCount = 0
 GlobalTime = 0
 NukerTime = 0
 MobCount = 0
-TNTCount = 0
 
 function Initialize(Plugin)
 	Plugin:SetName(g_PluginInfo.Name)
@@ -17,6 +17,7 @@ function Initialize(Plugin)
 	cPluginManager:AddHook(cPluginManager.HOOK_PLAYER_BREAKING_BLOCK, OnPlayerBreakingBlock)
 	cPluginManager:AddHook(cPluginManager.HOOK_PLAYER_DESTROYED, OnPlayerDestroyed)
 	cPluginManager:AddHook(cPluginManager.HOOK_PLAYER_JOINED, OnPlayerJoined)
+	cPluginManager:AddHook(cPluginManager.HOOK_PLAYER_MOVING, OnPlayerMoving)
 	cPluginManager:AddHook(cPluginManager.HOOK_PLAYER_PLACING_BLOCK, OnPlayerPlacingBlock)
 	cPluginManager:AddHook(cPluginManager.HOOK_PLAYER_RIGHT_CLICK, OnPlayerRightClick)
 	cPluginManager:AddHook(cPluginManager.HOOK_PLUGINS_LOADED, OnPluginsLoaded)
@@ -33,8 +34,6 @@ function Initialize(Plugin)
 	LOG("Initialised " .. Plugin:GetName())
 	return true
 end
-
-function None() end
 
 function OnPluginsLoaded()
 	cPluginManager:CallPlugin("WorldEdit", "AddHook", "OnAreaChanging", "Extras", "WorldEditCallback")

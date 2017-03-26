@@ -603,12 +603,10 @@ function HandleUsernameCommand(Split, Player)
 end
 
 function HandleVoteCommand(Split, Player)
-	Player:SendMessageInfo("Feel free to vote for the server by clicking on the links below")
-	Player:SendMessage(cCompositeChat():AddUrlPart(cChatColor.Green.. "[1] " ..cChatColor.LightGreen .. "MinecraftServers.org", "http://minecraftservers.org/vote/153833"))
-	Player:SendMessage(cCompositeChat():AddUrlPart(cChatColor.Green.. "[2] " ..cChatColor.LightGreen .. "TopG.org", "https://topg.org/Minecraft/in-414108"))
-	Player:SendMessage(cCompositeChat():AddUrlPart(cChatColor.Green.. "[3] " ..cChatColor.LightGreen .. "Mine Servers", "https://mineservers.com/server/DLwZBVyt/vote"))
-Player:SendMessage(cCompositeChat():AddUrlPart(cChatColor.Green.. "[4] " ..cChatColor.LightGreen .. "Minecraft Servers List", "http://www.minecraft-servers-list.org/index.php?a=in&u=flameserver"))
-	Player:SendMessage(cCompositeChat():AddUrlPart(cChatColor.Green.. "[5] " ..cChatColor.LightGreen .. "MC Index", "https://www.minecraft-index.com/54824/vote"))
+	Player:SendMessageInfo("Feel free to vote for the server to help it grow")
+	Player:SendMessage(cCompositeChat():AddUrlPart(cChatColor.Green.. "[1] " ..cChatColor.LightGreen .. "TopG.org", "https://topg.org/Minecraft/in-414108"))
+	Player:SendMessage(cCompositeChat():AddUrlPart(cChatColor.Green.. "[2] " ..cChatColor.LightGreen .. "MinecraftServers.org", "http://minecraftservers.org/vote/153833"))
+	Player:SendMessage(cCompositeChat():AddUrlPart(cChatColor.Green.. "[3] " ..cChatColor.LightGreen .. "MC Index", "https://www.minecraft-index.com/54824/vote"))
 	return true 
 end
 
@@ -740,25 +738,25 @@ function HandleEndCommand(Split, Player)
 end
 
 function HandleFlatlandsCommand(Split, Player)
-	local World = cRoot:Get():GetWorld("hubflatlands")
+	local World = cRoot:Get():GetWorld("flatlands")
 	Player:SetPitch(0)
 	Player:SetYaw(0)
-	if Player:GetWorld():GetName() == "hubflatlands" then
+	if Player:GetWorld():GetName() == "flatlands" then
 		Player:TeleportToCoords(World:GetSpawnX(), World:GetSpawnY(), World:GetSpawnZ() + 14)
 	end
-	Player:MoveToWorld(cRoot:Get():GetWorld("hubflatlands"), true, Vector3d(World:GetSpawnX(), World:GetSpawnY(), World:GetSpawnZ() + 14))
+	Player:MoveToWorld(cRoot:Get():GetWorld("flatlands"), true, Vector3d(World:GetSpawnX(), World:GetSpawnY(), World:GetSpawnZ() + 14))
 	Player:SendMessageSuccess("Successfully moved to the Flatlands")
 	return true
 end
 
 function HandleHubCommand(Split, Player)
-	local World = cRoot:Get():GetWorld("hubflatlands")
+	local World = cRoot:Get():GetWorld("flatlands")
 	Player:SetPitch(0)
 	Player:SetYaw(0)
-	if Player:GetWorld():GetName() == "hubflatlands" then
+	if Player:GetWorld():GetName() == "flatlands" then
 		Player:TeleportToCoords(World:GetSpawnX(), World:GetSpawnY(), World:GetSpawnZ())
 	end
-	Player:MoveToWorld("hubflatlands")
+	Player:MoveToWorld("flatlands")
 	Player:SendMessageSuccess("Successfully moved to the Hub")
 	return true
 end

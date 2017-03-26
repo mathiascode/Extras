@@ -1,12 +1,17 @@
 -- Quick settings
+local JoinTitle = cChatColor.LightGray .. "Welcome to Kaboom.pw!"
+local JoinSubtitle = "Do Anything • OP Commands"
 local BuildError = cChatColor.Rose .. "Go further from spawn to build and destroy"
 local SpamError = "Please avoid spamming"
 
 local CooldownCommands = GetValue {
+	"//chunk",
 	"//cyl",
 	"//drain",
 	"//ellipsoid",
 	"//expand",
+	"//fill",
+	"//fillr",
 	"//g",
 	"//gen",
 	"//generate",
@@ -20,6 +25,7 @@ local CooldownCommands = GetValue {
 	"//schematic",
 	"//snow",
 	"//sphere",
+	"//stack",
 	"//thaw",
 	"/action",
 	"/afk",
@@ -29,10 +35,15 @@ local CooldownCommands = GetValue {
 	"/clearchat",
 	"/console",
 	"/describe",
+	"/end",
+	"/flatlands",
 	"/green",
 	"/jumpscare",
 	"/me",
 	"/msg",
+	"/nether",
+	"/overworld",
+	"/portal",
 	"/pumpkins",
 	"/r",
 	"/reload",
@@ -42,6 +53,7 @@ local CooldownCommands = GetValue {
 	"/stop",
 	"/tell",
 	"/thaw",
+	"/save-all",
 	"/scare",
 	"/setjail",
 	"/setwarp",
@@ -49,6 +61,7 @@ local CooldownCommands = GetValue {
 	"/tellraw",
 	"/time",
 	"/whisper",
+	"/world",
 }
 
 function GetPlayerLookPos(Player)
@@ -62,7 +75,7 @@ end
 
 function IsInSpawn(X, Y, Z, WorldName)
 	local World = cRoot:Get():GetWorld(WorldName)
-	local SpawnArea = cBoundingBox(Vector3d(World:GetSpawnX() - 22, -999999999, World:GetSpawnZ() - 22), Vector3d(World:GetSpawnX() + 21, 999999999, World:GetSpawnZ() + 21))
+	local SpawnArea = cBoundingBox(Vector3d(World:GetSpawnX() - 22, -1000, World:GetSpawnZ() - 22), Vector3d(World:GetSpawnX() + 21, 1000, World:GetSpawnZ() + 21))
 	local PlayerLocation = Vector3d(X, Y, Z)
 
 	if SpawnArea:IsInside(PlayerLocation) then
@@ -72,7 +85,7 @@ end
 
 function IsInSpawnExplosion(X, Y, Z, WorldName)
 	local World = cRoot:Get():GetWorld(WorldName)
-	local SpawnArea = cBoundingBox(Vector3d(World:GetSpawnX() - 28, -999999999, World:GetSpawnZ() - 28), Vector3d(World:GetSpawnX() + 27, 999999999, World:GetSpawnZ() + 27))
+	local SpawnArea = cBoundingBox(Vector3d(World:GetSpawnX() - 28, -1000, World:GetSpawnZ() - 28), Vector3d(World:GetSpawnX() + 27, 1000, World:GetSpawnZ() + 27))
 	local PlayerLocation = Vector3d(X, Y, Z)
 
 	if SpawnArea:IsInside(PlayerLocation) then
@@ -165,11 +178,6 @@ function OnExecuteCommand(Player, CommandSplit, EntireCommand)
 			CanMessage[Player:GetUUID()] = false
 		end
 
-		if CommandSplit[1] == "/ban" or CommandSplit[1] == "/kick" or CommandSplit[1] == "/nuke" or CommandSplit[1] == "/regen" then
-			Player:SendMessageInfo("Unknown command: \"" .. CommandSplit[1] .. "\"")
-			return true
-		end
-
 		-- Speed limits
 		if CommandSplit[1] == "/speed" and tonumber(CommandSplit[3]) and tonumber(CommandSplit[3]) > 1000 then
 			if CommandSplit[4] ~= nil then
@@ -183,14 +191,14 @@ function OnExecuteCommand(Player, CommandSplit, EntireCommand)
 		-- Handles WorldEdit radius limits and invalid blocks
 		local Item = cItem()
 
-		if CommandSplit[1] == "//drain" or CommandSplit[1] == "//ex" or CommandSplit[1] == "//expand" or CommandSplit[1] == "//ext" or CommandSplit[1] == "//extinguish" or CommandSplit[1] == "//green" or CommandSplit[1] == "//replacenear" or CommandSplit[1] == "//thaw" or CommandSplit[1] == "/ex" or CommandSplit[1] == "/green" or CommandSplit[1] == "/pumpkins" or CommandSplit[1] == "/replacenear" or CommandSplit[1] == "/thaw" or CommandSplit[1] == "/snow" then
+		if CommandSplit[1] == "//drain" or CommandSplit[1] == "//ex" or CommandSplit[1] == "//expand" or CommandSplit[1] == "//ext" or CommandSplit[1] == "//extinguish" or CommandSplit[1] == "//green" or CommandSplit[1] == "//replacenear" or CommandSplit[1] == "//stack" or CommandSplit[1] == "//thaw" or CommandSplit[1] == "/ex" or CommandSplit[1] == "/green" or CommandSplit[1] == "/pumpkins" or CommandSplit[1] == "/replacenear" or CommandSplit[1] == "/thaw" or CommandSplit[1] == "/snow" then
 			if tonumber(CommandSplit[2]) and tonumber(CommandSplit[2]) > 25 then
 				Player:SendMessageFailure("Please reduce the radius to 25 or below")
 				return true
 			end
 		end
 
-		if CommandSplit[1] == "//sphere" or CommandSplit[1] == "//hsphere" or CommandSplit[1] == "//cyl" or CommandSplit[1] == "//hcyl" or CommandSplit[1] == "//pyramid" or CommandSplit[1] == "//hpyramid" then
+		if CommandSplit[1] == "//fill" or CommandSplit[1] == "//fillr" or CommandSplit[1] == "//sphere" or CommandSplit[1] == "//hsphere" or CommandSplit[1] == "//cyl" or CommandSplit[1] == "//hcyl" or CommandSplit[1] == "//pyramid" or CommandSplit[1] == "//hpyramid" then
 			local Radius = StringSplit(CommandSplit[3], ",")
 			for i = 1, 3 do
 				if tonumber(Radius[i]) and tonumber(Radius[i]) > 25 then
@@ -198,34 +206,34 @@ function OnExecuteCommand(Player, CommandSplit, EntireCommand)
 					return true
 				end
 			end
-			if StringToItem(CommandSplit[2], Item) and Item.m_ItemType == 46 or StringToItem(CommandSplit[2], Item) and Item.m_ItemType > 255 then
+			if StringToItem(CommandSplit[2], Item) and Item.m_ItemType > 255 then
 				Player:SendMessage(cChatColor.LightPurple .. "Unknown block type: '" .. CommandSplit[2] .. "'.")
 				return true
 			end
 		end
 
 		if CommandSplit[1] == "//re" or CommandSplit[1] == "//rep" or CommandSplit[1] == "//replace" then
-			if StringToItem(CommandSplit[2], Item) and Item.m_ItemType == 46 or StringToItem(CommandSplit[2], Item) and Item.m_ItemType > 255 then
+			if StringToItem(CommandSplit[2], Item) and Item.m_ItemType > 255 then
 				Player:SendMessage(cChatColor.Rose .. "Unknown src block type: '" .. CommandSplit[2] .. "'.")
 				return true
-			elseif StringToItem(CommandSplit[3], Item) and Item.m_ItemType == 46 or StringToItem(CommandSplit[3], Item) and Item.m_ItemType > 255 then
+			elseif StringToItem(CommandSplit[3], Item) and Item.m_ItemType > 255 then
 				Player:SendMessage(cChatColor.Rose .. "Unknown dst block type: '" .. CommandSplit[3] .. "'.")
 				return true
 			end
 		end
 
 		if CommandSplit[1] == "//replacenear" or CommandSplit[1] == "/replacenear" then
-			if StringToItem(CommandSplit[3], Item) and Item.m_ItemType == 46 or StringToItem(CommandSplit[3], Item) and Item.m_ItemType > 255 then
+			if StringToItem(CommandSplit[3], Item) and Item.m_ItemType > 255 then
 				Player:SendMessage(cChatColor.Rose .. "Unknown src block type: '" .. CommandSplit[3] .. "'.")
 				return true
-			elseif StringToItem(CommandSplit[4], Item) and Item.m_ItemType == 46 or StringToItem(CommandSplit[4], Item) and Item.m_ItemType > 255 then
+			elseif StringToItem(CommandSplit[4], Item) and Item.m_ItemType > 255 then
 				Player:SendMessage(cChatColor.Rose .. "Unknown dst block type: '" .. CommandSplit[4] .. "'.")
 				return true
 			end
 		end
 
 		if CommandSplit[1] == "//set" and StringToItem(CommandSplit[2], Item) then
-			if Item.m_ItemType == 46 or Item.m_ItemType > 255 then
+			if Item.m_ItemType > 255 then
 				Player:SendMessage(cChatColor.Rose .. "Unknown dst block type: '" .. CommandSplit[2] .. "'.")
 				return true
 			end
@@ -274,15 +282,15 @@ function OnPlayerRightClick(Player, BlockX, BlockY, BlockZ, BlockFace, CursorX, 
 	end
 
 	-- Secret in the hub ;)
-	if Player:GetWorld():GetName() == "hubflatlands" and BlockX == 0 and BlockY == 11 and BlockZ == 2 then
+	if Player:GetWorld():GetName() == "flatlands" and BlockX == 0 and BlockY == 11 and BlockZ == 2 then
 		Player:GetWorld():BroadcastParticleEffect("heart", 0, 12, 2, 2, 1, 0.5, 0, 40)
 	end
 end
 
 function OnPlayerJoined(Player)
 	cRoot:Get():BroadcastChat(cChatColor.Green.. "(+) " .. cChatColor.LightGreen .. Player:GetName())
-	Player:GetClientHandle():SendSetTitle(cCompositeChat():AddTextPart(cChatColor.LightGray .. "Welcome to Kaboom.pw!"))
-	Player:GetClientHandle():SendSetSubTitle((cCompositeChat():AddTextPart("Do Anything • OP Commands")))
+	Player:GetClientHandle():SendSetTitle(cCompositeChat():AddTextPart(JoinTitle))
+	Player:GetClientHandle():SendSetSubTitle((cCompositeChat():AddTextPart(JoinSubtitle)))
 	Player:GetClientHandle():SendTitleTimes(10, 160, 5)
 	return true
 end
@@ -293,6 +301,122 @@ function OnPlayerDestroyed(Player)
 	return true
 end
 
+function OnPlayerMoving(Player, OldPosition, NewPosition)
+	-- Shows messages about different worlds in the hub, and creates portals
+	local X = Player:GetWorld():GetSpawnX()
+	local Y = Player:GetWorld():GetSpawnY()
+	local Z = Player:GetWorld():GetSpawnZ()
+	local World = Player:GetWorld():GetName()
+
+	-- Message coordinates
+	local HubWorld = cBoundingBox(Vector3d(X - 5, Y, Z - 5), Vector3d(X + 6, Y + 17, Z + 6))
+	local HubEnd = cBoundingBox(Vector3d(X - 12, Y, Z - 4), Vector3d(X - 5, Y + 17, Z + 5))
+	local HubNether = cBoundingBox(Vector3d(X + 6, Y, Z - 4), Vector3d(X + 13, Y + 17, Z + 5))
+	local HubOverworld = cBoundingBox(Vector3d(X - 4, Y, Z - 12), Vector3d(X + 5, Y + 17, Z - 5))
+	local HubFlatlands = cBoundingBox(Vector3d(X - 4, Y, Z + 6), Vector3d(X + 5, Y + 17, Z + 14))
+	local FlatlandsWelcome = cBoundingBox(Vector3d(X - 4, Y, Z + 14), Vector3d(X + 5, Y + 17, Z + 20))
+	local OverworldWelcome = cBoundingBox(Vector3d(X - 7, Y, Z - 6), Vector3d(X + 6, Y + 25, Z + 1)) 
+	local OverworldHub = cBoundingBox(Vector3d(X - 7, Y, Z + 1), Vector3d(X + 6, Y + 25, Z + 5))
+	local NetherWelcome = cBoundingBox(Vector3d(X - 1, Y, Z - 7), Vector3d(X + 6, Y + 25, Z + 6))
+	local NetherHub = cBoundingBox(Vector3d(X - 5, Y, Z - 7), Vector3d(X - 1, Y + 25, Z + 6))
+
+	-- Portal coordinates
+	local HubToEnd = cBoundingBox(Vector3d(X - 14, Y, Z - 3), Vector3d(X - 13, Y + 5, Z + 3))
+	local HubToNether = cBoundingBox(Vector3d(X + 13, Y, Z - 3), Vector3d(X + 14, Y + 5, Z + 3))
+	local HubToOverworld = cBoundingBox(Vector3d(X - 3, Y, Z - 14), Vector3d(X + 3, Y + 5, Z - 13))
+	local OverworldToHub = cBoundingBox(Vector3d(X - 1, Y, Z + 5), Vector3d(X + 1, Y + 4, Z + 6))
+	local NetherToHub = cBoundingBox(Vector3d(X - 6, Y, Z - 1), Vector3d(X - 5, Y + 4, Z + 1))
+
+	if World == "flatlands" then
+		if not HubWorld:IsInside(NewPosition) and not HubFlatlands:IsInside(NewPosition) and not HubOverworld:IsInside(NewPosition) and not HubNether:IsInside(NewPosition) and not HubEnd:IsInside(NewPosition) and not FlatlandsWelcome:IsInside(NewPosition) and not HubToEnd:IsInside(NewPosition) and not HubToNether:IsInside(NewPosition) and not HubToOverworld:IsInside(NewPosition) then
+			IsInside[Player:GetUUID()] = nil
+		elseif HubWorld:IsInside(NewPosition) and IsInside[Player:GetUUID()] ~= 1 then
+			Player:GetClientHandle():SendSetTitle((cCompositeChat()))
+			Player:GetClientHandle():SendSetSubTitle((cCompositeChat():AddTextPart("Walk into a dimension portal to get started")))
+			Player:GetClientHandle():SendTitleTimes(10, 100, 5)
+			IsInside[Player:GetUUID()] = 1
+		elseif HubFlatlands:IsInside(NewPosition) and IsInside[Player:GetUUID()] ~= 2 then
+			Player:GetClientHandle():SendSetTitle((cCompositeChat()))
+			Player:GetClientHandle():SendSetSubTitle((cCompositeChat():AddTextPart(cChatColor.Green .. cChatColor.Bold .. "Flatlands")))
+			Player:GetClientHandle():SendTitleTimes(10, 100, 5)
+			IsInside[Player:GetUUID()] = 2
+		elseif HubOverworld:IsInside(NewPosition) and IsInside[Player:GetUUID()] ~= 3 then
+			Player:GetClientHandle():SendSetTitle((cCompositeChat()))
+			Player:GetClientHandle():SendSetSubTitle((cCompositeChat():AddTextPart(cChatColor.Green .. cChatColor.Bold .. "Overworld")))
+			Player:GetClientHandle():SendTitleTimes(10, 100, 5)
+			IsInside[Player:GetUUID()] = 3
+		elseif HubNether:IsInside(NewPosition) and IsInside[Player:GetUUID()] ~= 4 then
+			Player:GetClientHandle():SendSetTitle((cCompositeChat()))
+			Player:GetClientHandle():SendSetSubTitle((cCompositeChat():AddTextPart(cChatColor.Red .. cChatColor.Bold .. "Nether")))
+			Player:GetClientHandle():SendTitleTimes(10, 100, 5)
+			IsInside[Player:GetUUID()] = 4
+		elseif HubEnd:IsInside(NewPosition) and IsInside[Player:GetUUID()] ~= 5 then	
+			Player:GetClientHandle():SendSetTitle((cCompositeChat()))
+			Player:GetClientHandle():SendSetSubTitle((cCompositeChat():AddTextPart(cChatColor.Bold .. "The End")))
+			Player:GetClientHandle():SendTitleTimes(10, 100, 5)
+			IsInside[Player:GetUUID()] = 5
+		elseif FlatlandsWelcome:IsInside(NewPosition) and IsInside[Player:GetUUID()] ~= 6 then					
+			Player:GetClientHandle():SendSetTitle((cCompositeChat()))
+			Player:GetClientHandle():SendSetSubTitle((cCompositeChat():AddTextPart(cChatColor.White .. "Welcome to the " ..cChatColor.LightGreen .. cChatColor.Bold ..  "Flatlands")))
+			Player:GetClientHandle():SendTitleTimes(10, 100, 5)
+			IsInside[Player:GetUUID()] = 6
+		elseif HubToEnd:IsInside(NewPosition) and IsInside[Player:GetUUID()] ~= 7 then
+			Player:SetPitch(0)
+			Player:SetYaw(90)
+			Player:MoveToWorld("end")
+			IsInside[Player:GetUUID()] = 7
+		elseif HubToNether:IsInside(NewPosition) and IsInside[Player:GetUUID()] ~= 8 then
+			Player:SetPitch(0)
+			Player:SetYaw(-90)
+			Player:MoveToWorld("nether")
+			IsInside[Player:GetUUID()] = 8
+		elseif HubToOverworld:IsInside(NewPosition) and IsInside[Player:GetUUID()] ~= 9 then
+			Player:SetPitch(0)
+			Player:SetYaw(180)
+			Player:MoveToWorld("overworld")
+			IsInside[Player:GetUUID()] = 9
+		end
+	elseif World == "overworld" then
+		if not OverworldWelcome:IsInside(NewPosition) and not OverworldHub:IsInside(NewPosition) and not OverworldToHub:IsInside(NewPosition) then
+			IsInside[Player:GetUUID()] = nil
+		elseif OverworldWelcome:IsInside(NewPosition) and IsInside[Player:GetUUID()] ~= 10 then
+			Player:GetClientHandle():SendSetTitle((cCompositeChat()))
+			Player:GetClientHandle():SendSetSubTitle((cCompositeChat():AddTextPart(cChatColor.White.. "Welcome to the " .. cChatColor.Green .. cChatColor.Bold .. "Overworld")))
+			Player:GetClientHandle():SendTitleTimes(10, 100, 5)
+			IsInside[Player:GetUUID()] = 10
+		elseif OverworldHub:IsInside(NewPosition) and IsInside[Player:GetUUID()] ~= 11 then
+			Player:GetClientHandle():SendSetTitle((cCompositeChat()))
+			Player:GetClientHandle():SendSetSubTitle((cCompositeChat():AddTextPart(cChatColor.White.. "Back to the Hub")))
+			Player:GetClientHandle():SendTitleTimes(10, 100, 5)
+			IsInside[Player:GetUUID()] = 11
+		elseif OverworldToHub:IsInside(NewPosition) and IsInside[Player:GetUUID()] ~= 12 then
+			Player:SetPitch(0)
+			Player:SetYaw(0)
+			Player:MoveToWorld("flatlands")
+			IsInside[Player:GetUUID()] = 12
+		end
+	elseif World == "nether" then
+		if not NetherWelcome:IsInside(NewPosition) and not NetherHub:IsInside(NewPosition) and not NetherToHub:IsInside(NewPosition) then
+			IsInside[Player:GetUUID()] = nil
+		elseif NetherWelcome:IsInside(NewPosition) and IsInside[Player:GetUUID()] ~= 13 then
+			Player:GetClientHandle():SendSetTitle((cCompositeChat()))
+			Player:GetClientHandle():SendSetSubTitle((cCompositeChat():AddTextPart(cChatColor.White.. "Welcome to the " .. cChatColor.Red .. cChatColor.Bold .. "Nether")))
+			Player:GetClientHandle():SendTitleTimes(10, 100, 5)
+			IsInside[Player:GetUUID()] = 13
+		elseif NetherHub:IsInside(NewPosition) and IsInside[Player:GetUUID()] ~= 14 then
+			Player:GetClientHandle():SendSetTitle((cCompositeChat()))
+			Player:GetClientHandle():SendSetSubTitle((cCompositeChat():AddTextPart(cChatColor.White.. "Back to the Hub")))
+			Player:GetClientHandle():SendTitleTimes(10, 100, 5)
+			IsInside[Player:GetUUID()] = 14
+		elseif NetherToHub:IsInside(NewPosition) and IsInside[Player:GetUUID()] ~= 15 then
+			Player:SetPitch(0)
+			Player:SetYaw(0)
+			Player:MoveToWorld("flatlands")
+			IsInside[Player:GetUUID()] = 15
+		end
+	end
+end
+
 function OnServerPing(ClientHandle, ServerDescription, OnlinePlayers, MaxPlayers)
 	local ServerDescription = ServerDescription:gsub("	", "\n")
 	local MaxPlayers = OnlinePlayers + 1
@@ -300,14 +424,6 @@ function OnServerPing(ClientHandle, ServerDescription, OnlinePlayers, MaxPlayers
 end
 
 function OnSpawningEntity(World, Entity)
-	World:ForEachEntity(
-		function(Entity)
-			if Entity:IsTNT() then
-				TNTCount = TNTCount + 1
-			end
-		end
-	)
-
 	if Entity:IsMob() then
 		MobCount = MobCount + 1
 		if MobCount > 20 then
@@ -316,11 +432,6 @@ function OnSpawningEntity(World, Entity)
 	end
 
 	if Entity:IsPickup() then
-		return true
-	end
-
-	if Entity:IsTNT() and TNTCount > 8 then
-		TNTCount = 0
 		return true
 	end
 
@@ -343,7 +454,7 @@ function OnTick(TimeDelta)
 			end
 		)
 
-		-- Checks if server is stuck
+		-- If the server is stuck, this file won't update. An OS-side script checks when the file was last modified, and restarts the server if too much time has passed since the last modification.
 		os.remove("update")
 		file = io.open("update", "a")
 		file:close()
@@ -353,6 +464,7 @@ function OnTick(TimeDelta)
 end
 
 function OnUpdatingSign(World, BlockX, BlockY, BlockZ, Line1, Line2, Line3, Line4, Player)
+	-- Limits the amount of characters on a sign, fixing an exploit where too much data in signs cause lag
 	local Line1 = string.sub(Line1, 1, 45)
 	local Line2 = string.sub(Line2, 1, 45)
 	local Line3 = string.sub(Line3, 1, 45)
@@ -363,12 +475,6 @@ end
 function OnWorldTick(World, TimeDelta)
 	World:ForEachPlayer(
 		function(Player)
-			-- Creates particles around the player
-			if ParticlePlayers[Player:GetUUID()] == "note" then
-				Player:GetWorld():BroadcastParticleEffect("note", Player:GetPosX(), Player:GetPosY(), Player:GetPosZ(), 0.5, 1, 0.5, math.random(1, 16), 10)
-			elseif ParticlePlayers[Player:GetUUID()] ~= nil then
-				Player:GetWorld():BroadcastParticleEffect(ParticlePlayers[Player:GetUUID()], Player:GetPosX(), Player:GetPosY(), Player:GetPosZ(), 0.5, 1, 0.5, 0, 10)
-			end
 			-- Checks if player is using nuker in spawn
 			if NukerTime == 1 then
 				BreakTime = 0
@@ -376,90 +482,12 @@ function OnWorldTick(World, TimeDelta)
 			else
 				NukerTime = NukerTime + 1
 			end
-			-- Handles portals in spawn
-			local X = World:GetSpawnX()
-			local Y = World:GetSpawnY()
-			local Z = World:GetSpawnZ()
-			local Position = Player:GetPosition()
-			local HubToEnd = cBoundingBox(Vector3d(X - 14, Y, Z - 3), Vector3d(X - 13, Y + 5, Z + 3))
-			local HubToNether = cBoundingBox(Vector3d(X + 13, Y, Z - 3), Vector3d(X + 14, Y + 5, Z + 3))
-			local HubToOverworld = cBoundingBox(Vector3d(X - 3, Y, Z - 14), Vector3d(X + 3, Y + 5, Z - 13))
-			local OverworldToHub = cBoundingBox(Vector3d(X - 1, Y, Z + 5), Vector3d(X + 1, Y + 4, Z + 6))
-			local NetherToHub = cBoundingBox(Vector3d(X - 6, Y, Z - 1), Vector3d(X - 5, Y + 4, Z + 1))
-			if Player:GetWorld():GetName() == "hubflatlands" then
-				if HubToEnd:IsInside(Position) then
-					Player:SetPitch(0)
-					Player:SetYaw(90)
-					Player:MoveToWorld("end")
-				end
-				if HubToNether:IsInside(Position) then
-					Player:SetPitch(0)
-					Player:SetYaw(-90)
-					Player:MoveToWorld("nether")
-				end
-				if HubToOverworld:IsInside(Position) then
-					Player:SetPitch(0)
-					Player:SetYaw(180)
-					Player:MoveToWorld("overworld")
-				end
-			elseif Player:GetWorld():GetName() == "overworld" then
-				if OverworldToHub:IsInside(Position) then
-					Player:SetPitch(0)
-					Player:SetYaw(0)
-					Player:MoveToWorld("hubflatlands")
-				end
-			elseif Player:GetWorld():GetName() == "nether" then
-				if NetherToHub:IsInside(Position) then
-					Player:SetPitch(0)
-					Player:SetYaw(0)
-					Player:MoveToWorld("hubflatlands")
-				end
-			end
-	
-			-- Shows messages about different worlds in the hub
-			local HubWorld = cBoundingBox(Vector3d(X - 5, Y, Z - 5), Vector3d(X + 6, Y + 17, Z + 6))
-			local HubEnd = cBoundingBox(Vector3d(X - 12, Y, Z - 4), Vector3d(X - 5, Y + 17, Z + 5))
-			local HubNether = cBoundingBox(Vector3d(X + 6, Y, Z - 4), Vector3d(X + 13, Y + 17, Z + 5))
-			local HubOverworld = cBoundingBox(Vector3d(X - 4, Y, Z - 12), Vector3d(X + 5, Y + 17, Z - 5))
-			local HubFlatlands = cBoundingBox(Vector3d(X - 4, Y, Z + 6), Vector3d(X + 5, Y + 17, Z + 14))
-			local FlatlandsWelcome = cBoundingBox(Vector3d(X - 4, Y, Z + 14), Vector3d(X + 5, Y + 17, Z + 20))
-			local OverworldWelcome = cBoundingBox(Vector3d(X - 7, Y, Z - 6), Vector3d(X + 6, Y + 25, Z + 1)) 
-			local OverworldHub = cBoundingBox(Vector3d(X - 7, Y, Z + 1), Vector3d(X + 6, Y + 25, Z + 5))
-			local NetherWelcome = cBoundingBox(Vector3d(X - 1, Y, Z - 7), Vector3d(X + 6, Y + 25, Z + 6))
-			local NetherHub = cBoundingBox(Vector3d(X - 5, Y, Z - 7), Vector3d(X - 1, Y + 25, Z + 6))
-			if Player:GetWorld():GetName() == "hubflatlands" then
-				if HubWorld:IsInside(Position) then
-					Player:SendAboveActionBarMessage("Walk into a dimension portal to get started")
-				end
-				if HubFlatlands:IsInside(Position) then
-					Player:SendAboveActionBarMessage(cChatColor.LightGreen .. cChatColor.Bold .. "Flatlands")
-				end
-				if HubOverworld:IsInside(Position) then
-					Player:SendAboveActionBarMessage(cChatColor.LightGreen .. cChatColor.Bold .. "Overworld")
-				end
-				if HubNether:IsInside(Position) then
-					Player:SendAboveActionBarMessage(cChatColor.Rose .. cChatColor.Bold .. "Nether")
-				end
-				if HubEnd:IsInside(Position) then	
-					Player:SendAboveActionBarMessage(cChatColor.Bold .. "The End")
-				end			
-				if FlatlandsWelcome:IsInside(Position) then					
-					Player:SendAboveActionBarMessage(cChatColor.White .. "Welcome to the " ..cChatColor.LightGreen .. cChatColor.Bold ..  "Flatlands")
-				end
-			elseif Player:GetWorld():GetName() == "overworld" then
-				if OverworldWelcome:IsInside(Position) then
-				Player:SendAboveActionBarMessage(cChatColor.Gray.. "Welcome to the " .. cChatColor.Green .. cChatColor.Bold .. "Overworld")
-				end
-				if OverworldHub:IsInside(Position) then
-					Player:SendAboveActionBarMessage(cChatColor.Gray.. "Back to the Hub")
-				end
-			elseif Player:GetWorld():GetName() == "nether" then
-				if NetherWelcome:IsInside(Position) then
-					Player:SendAboveActionBarMessage(cChatColor.White.. "Welcome to the " .. cChatColor.Red .. cChatColor.Bold .. "Nether")
-				end
-				if NetherHub:IsInside(Position) then
-					Player:SendAboveActionBarMessage(cChatColor.White.. "Back to the Hub")
-				end
+
+			-- Creates particles around the player
+			if ParticlePlayers[Player:GetUUID()] == "note" then
+				Player:GetWorld():BroadcastParticleEffect("note", Player:GetPosX(), Player:GetPosY(), Player:GetPosZ(), 0.5, 1, 0.5, math.random(1, 16), 10)
+			elseif ParticlePlayers[Player:GetUUID()] ~= nil then
+				Player:GetWorld():BroadcastParticleEffect(ParticlePlayers[Player:GetUUID()], Player:GetPosX(), Player:GetPosY(), Player:GetPosZ(), 0.5, 1, 0.5, 0, 10)
 			end
 		end
 	)
@@ -467,7 +495,7 @@ end
 
 -- Prevents players from using WorldEdit in spawn
 function WorldEditCallback(AffectedAreaCuboid, Player, World, Operation)
-	local ProtectedCuboid = cCuboid(World:GetSpawnX() - 22, -999999999, World:GetSpawnZ() - 22, World:GetSpawnX() + 21, 999999999, World:GetSpawnZ() + 21)
+	local ProtectedCuboid = cCuboid(World:GetSpawnX() - 22, -1000, World:GetSpawnZ() - 22, World:GetSpawnX() + 21, 1000, World:GetSpawnZ() + 21)
 
 	if ProtectedCuboid:DoesIntersect(AffectedAreaCuboid) then
 		Player:SendAboveActionBarMessage(BuildError)
