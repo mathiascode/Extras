@@ -1,8 +1,8 @@
 g_PluginInfo =
 {
 	Name = "Extras",
-	Version = "1.5",
-	Date = "2017-03-26",
+	Version = "2",
+	Date = "2017-05-17",
 	SourceLocation = "https://github.com/mathiascode/Extras",
 	Description = [[Plugin for Cuberite that adds extra functionality to the Kaboom.pw server.]],
 
@@ -220,12 +220,6 @@ g_PluginInfo =
 			Permission = "extras.reply",
 			HelpString = "Replies to the latest private message you recieved"
 		},
-		["/reload"] =
-		{
-			Handler = HandleReloadCommand,
-			Permission = "extras.reload",
-			HelpString = "Reloads all plugins"
-		},
 		["/restart"] =
 		{
 			Handler = HandleRestartCommand,
@@ -249,12 +243,6 @@ g_PluginInfo =
 			Handler = HandleStarveCommand,
 			Permission = "extras.starve",
 			HelpString = "Sets your food level to zero"
-		},
-		["/stop"] =
-		{
-			Handler = HandleStopCommand,
-			Permission = "extras.stop",
-			HelpString = "Stops the server"
 		},
 		["/suicide"] =
 		{
@@ -282,18 +270,23 @@ g_PluginInfo =
 			Permission = "extras.tellraw",
 			HelpString = "Broadcasts raw text to the server"
 		},
+                ["/title"] =
+                {
+			Handler = HandleTitleCommand,
+			Permission = "extras.title",
+			HelpString = "Broadcasts raw text to the server"
+		},
+		["/tpohere"] =
+		{
+			Handler = HandleTpohereCommand,
+			Permission = "extras.tpohere",
+			HelpString = "Teleports a player to you"
+		},
 		["/tppos"] =
 		{
 			Handler = HandleTpposCommand,
 			Permission = "extras.tppos",
 			HelpString = "Teleports you directly to the specified coordinates"
-		},
-		["/trail"] =
-		{
-			Alias = "/particletrail",
-			Handler = HandleTrailCommand,
-			Permission = "extras.trail",
-			HelpString = "Creates a particle trail behind you"
 		},
 		["/unloadchunks"] =
 		{
@@ -325,21 +318,6 @@ g_PluginInfo =
 			Handler = HandleWorldCommand,
 			Permission = "extras.world",
 			HelpString = "Moves your player to a different world"
-		},
-	},
-	ConsoleCommands =
-	{
-		["ban"] =
-		{
-			Handler = block
-		},
-		["kick"] =
-		{
-			Handler = block
-		},
-		["say"] =
-		{
-			Handler = block
 		},
 	},
 	Permissions =

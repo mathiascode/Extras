@@ -1,8 +1,18 @@
 -- Quick settings
 local JoinTitle = cChatColor.LightGray .. "Welcome to Kaboom.pw!"
-local JoinSubtitle = "Do Anything • OP Commands"
+local JoinSubtitle = "Free OP • Anarchy"
 local BuildError = cChatColor.Rose .. "Go further from spawn to build and destroy"
 local SpamError = "Please avoid spamming"
+
+function GetValue(list)
+	local value = {}
+	for k, v in ipairs(list) do
+		value[v] = true
+	end
+	return value
+end
+
+local BlacklistedPickupIDs = GetValue {8, 9, 10, 11, 26, 34, 43, 51, 55, 59, 62, 63, 64, 68, 71, 74, 75, 83, 90, 92, 93, 94, 104, 105, 115, 117, 118, 119, 124, 127, 132, 140, 141, 142, 144, 149, 150, 176, 177, 178, 193, 194, 195, 196, 197, 207, 209, 212}
 
 local CooldownCommands = GetValue {
 	"//chunk",
@@ -39,6 +49,7 @@ local CooldownCommands = GetValue {
 	"/flatlands",
 	"/green",
 	"/jumpscare",
+	"/kill",
 	"/me",
 	"/msg",
 	"/nether",
@@ -51,6 +62,7 @@ local CooldownCommands = GetValue {
 	"/say",
 	"/snow",
 	"/stop",
+	"/suicide",
 	"/tell",
 	"/thaw",
 	"/save-all",
@@ -75,17 +87,7 @@ end
 
 function IsInSpawn(X, Y, Z, WorldName)
 	local World = cRoot:Get():GetWorld(WorldName)
-	local SpawnArea = cBoundingBox(Vector3d(World:GetSpawnX() - 22, -1000, World:GetSpawnZ() - 22), Vector3d(World:GetSpawnX() + 21, 1000, World:GetSpawnZ() + 21))
-	local PlayerLocation = Vector3d(X, Y, Z)
-
-	if SpawnArea:IsInside(PlayerLocation) then
-		return true
-	end
-end
-
-function IsInSpawnExplosion(X, Y, Z, WorldName)
-	local World = cRoot:Get():GetWorld(WorldName)
-	local SpawnArea = cBoundingBox(Vector3d(World:GetSpawnX() - 28, -1000, World:GetSpawnZ() - 28), Vector3d(World:GetSpawnX() + 27, 1000, World:GetSpawnZ() + 27))
+	local SpawnArea = cBoundingBox(Vector3d(World:GetSpawnX() - 41, -1000, World:GetSpawnZ() - 41), Vector3d(World:GetSpawnX() + 40, 1000, World:GetSpawnZ() + 40))
 	local PlayerLocation = Vector3d(X, Y, Z)
 
 	if SpawnArea:IsInside(PlayerLocation) then
@@ -94,11 +96,11 @@ function IsInSpawnExplosion(X, Y, Z, WorldName)
 end
 
 function OnChat(Player, Message)
-	if CanMessage[Player:GetUUID()] == false then
+	if CanMessage[Player:GetUUID()] == 0 then
 		Player:SendMessageFailure(SpamError)
 		return true
 	else
-		CanMessage[Player:GetUUID()] = false
+		CanMessage[Player:GetUUID()] = 0
 	end
 
 	if NickList[Player:GetUUID()] == nil then
@@ -171,11 +173,11 @@ end
 function OnExecuteCommand(Player, CommandSplit, EntireCommand)
 	if Player then
 		-- Checks if the player is spamming the specified commands
-		if CanMessage[Player:GetUUID()] == false and CooldownCommands[CommandSplit[1]] then
+		if CanMessage[Player:GetUUID()] == 0 and CooldownCommands[CommandSplit[1]] then
 			Player:SendMessageFailure(SpamError)
 			return true
 		else
-			CanMessage[Player:GetUUID()] = false
+			CanMessage[Player:GetUUID()] = 0
 		end
 
 		-- Speed limits
@@ -192,48 +194,64 @@ function OnExecuteCommand(Player, CommandSplit, EntireCommand)
 		local Item = cItem()
 
 		if CommandSplit[1] == "//drain" or CommandSplit[1] == "//ex" or CommandSplit[1] == "//expand" or CommandSplit[1] == "//ext" or CommandSplit[1] == "//extinguish" or CommandSplit[1] == "//green" or CommandSplit[1] == "//replacenear" or CommandSplit[1] == "//stack" or CommandSplit[1] == "//thaw" or CommandSplit[1] == "/ex" or CommandSplit[1] == "/green" or CommandSplit[1] == "/pumpkins" or CommandSplit[1] == "/replacenear" or CommandSplit[1] == "/thaw" or CommandSplit[1] == "/snow" then
-			if tonumber(CommandSplit[2]) and tonumber(CommandSplit[2]) > 25 then
-				Player:SendMessageFailure("Please reduce the radius to 25 or below")
-				return true
+			if tonumber(CommandSplit[2]) then
+				if tonumber(CommandSplit[2]) > 25 or tonumber(CommandSplit[2]) < -25 then
+					Player:SendMessageFailure("Please reduce the radius to 25 or below")
+					return true
+				end
 			end
 		end
 
 		if CommandSplit[1] == "//fill" or CommandSplit[1] == "//fillr" or CommandSplit[1] == "//sphere" or CommandSplit[1] == "//hsphere" or CommandSplit[1] == "//cyl" or CommandSplit[1] == "//hcyl" or CommandSplit[1] == "//pyramid" or CommandSplit[1] == "//hpyramid" then
 			local Radius = StringSplit(CommandSplit[3], ",")
 			for i = 1, 3 do
-				if tonumber(Radius[i]) and tonumber(Radius[i]) > 25 then
-					Player:SendMessageFailure("Please reduce the radius to 25 or below")
-					return true
+				if tonumber(Radius[i]) then
+					if tonumber(Radius[i]) < -25 then
+						Player:SendMessageFailure("Please reduce the radius to 25 or below")
+						return true
+					end
 				end
 			end
-			if StringToItem(CommandSplit[2], Item) and Item.m_ItemType > 255 then
-				Player:SendMessage(cChatColor.LightPurple .. "Unknown block type: '" .. CommandSplit[2] .. "'.")
-				return true
+			if StringToItem(CommandSplit[2], Item) then
+				if Item.m_ItemType < 0 or Item.m_ItemType > 255 then
+					Player:SendMessage(cChatColor.LightPurple .. "Unknown block type: '" .. CommandSplit[2] .. "'.")
+					return true
+				end
 			end
 		end
 
 		if CommandSplit[1] == "//re" or CommandSplit[1] == "//rep" or CommandSplit[1] == "//replace" then
-			if StringToItem(CommandSplit[2], Item) and Item.m_ItemType > 255 then
-				Player:SendMessage(cChatColor.Rose .. "Unknown src block type: '" .. CommandSplit[2] .. "'.")
-				return true
-			elseif StringToItem(CommandSplit[3], Item) and Item.m_ItemType > 255 then
-				Player:SendMessage(cChatColor.Rose .. "Unknown dst block type: '" .. CommandSplit[3] .. "'.")
-				return true
+			if StringToItem(CommandSplit[2], Item) then
+				if Item.m_ItemType < 0 or Item.m_ItemType > 255 then
+					Player:SendMessage(cChatColor.Rose .. "Unknown src block type: '" .. CommandSplit[2] .. "'.")
+					return true
+				end
+			end
+			if StringToItem(CommandSplit[3], Item) then
+				if Item.m_ItemType < 0 or Item.m_ItemType > 255 then
+					Player:SendMessage(cChatColor.Rose .. "Unknown dst block type: '" .. CommandSplit[3] .. "'.")
+					return true
+				end
 			end
 		end
 
 		if CommandSplit[1] == "//replacenear" or CommandSplit[1] == "/replacenear" then
-			if StringToItem(CommandSplit[3], Item) and Item.m_ItemType > 255 then
-				Player:SendMessage(cChatColor.Rose .. "Unknown src block type: '" .. CommandSplit[3] .. "'.")
-				return true
-			elseif StringToItem(CommandSplit[4], Item) and Item.m_ItemType > 255 then
-				Player:SendMessage(cChatColor.Rose .. "Unknown dst block type: '" .. CommandSplit[4] .. "'.")
-				return true
+			if StringToItem(CommandSplit[3], Item) then
+				if Item.m_ItemType < 0 or Item.m_ItemType > 255 then
+					Player:SendMessage(cChatColor.Rose .. "Unknown src block type: '" .. CommandSplit[3] .. "'.")
+					return true
+				end
+			end
+			if StringToItem(CommandSplit[4], Item) then
+				if Item.m_ItemType < 0 or Item.m_ItemType > 255 then
+					Player:SendMessage(cChatColor.Rose .. "Unknown dst block type: '" .. CommandSplit[4] .. "'.")
+					return true
+				end
 			end
 		end
 
 		if CommandSplit[1] == "//set" and StringToItem(CommandSplit[2], Item) then
-			if Item.m_ItemType > 255 then
+			if Item.m_ItemType < 0 or Item.m_ItemType > 255 then
 				Player:SendMessage(cChatColor.Rose .. "Unknown dst block type: '" .. CommandSplit[2] .. "'.")
 				return true
 			end
@@ -243,20 +261,13 @@ end
 
 function OnExploding(World, ExplosionSize, CanCauseFire, X, Y, Z, Source, SourceData)
 	ExplosionCount = ExplosionCount + 1
-	if IsInSpawnExplosion(X, Y, Z, World:GetName()) or ExplosionCount > 15 then
+	if IsInSpawn(X, Y, Z, World:GetName()) or ExplosionCount > 50 then
 		return true
 	end
 end
 
 function OnPlayerBreakingBlock(Player, BlockX, BlockY, BlockZ, BlockFace, Status, BlockType, BlockMeta)
 	if IsInSpawn(BlockX, BlockY, BlockZ, Player:GetWorld():GetName()) then
-		-- Teleports player up if nuker is detected in spawn
-		if CanBreak[Player:GetUUID()] == false then
-			Player:TeleportToCoords(Player:GetPosX(), Player:GetPosY() + 8, Player:GetPosZ())
-			Player:SetFlying(true)
-		else
-			CanBreak[Player:GetUUID()] = false
-		end
 		Player:SendAboveActionBarMessage(BuildError)
 		return true
 	end
@@ -274,13 +285,6 @@ function OnPlayerPlacingBlock(Player, BlockX, BlockY, BlockZ, BlockFace, CursorX
 end
 
 function OnPlayerRightClick(Player, BlockX, BlockY, BlockZ, BlockFace, CursorX, CursorY, CursorZ)
-	if IsInSpawn(BlockX, BlockY, BlockZ, Player:GetWorld():GetName()) then
-		if Player:GetWorld():GetBlock(BlockX, BlockY, BlockZ) == E_BLOCK_GRASS or Player:GetWorld():GetBlock(BlockX, BlockY, BlockZ) == E_BLOCK_DIRT or Player:GetEquippedItem().m_ItemType == E_ITEM_FLINT_AND_STEEL or Player:GetEquippedItem().m_ItemType == E_ITEM_FIRE_CHARGE then
-			Player:SendAboveActionBarMessage(BuildError)
-			return true
-		end
-	end
-
 	-- Secret in the hub ;)
 	if Player:GetWorld():GetName() == "flatlands" and BlockX == 0 and BlockY == 11 and BlockZ == 2 then
 		Player:GetWorld():BroadcastParticleEffect("heart", 0, 12, 2, 2, 1, 0.5, 0, 40)
@@ -288,17 +292,9 @@ function OnPlayerRightClick(Player, BlockX, BlockY, BlockZ, BlockFace, CursorX, 
 end
 
 function OnPlayerJoined(Player)
-	cRoot:Get():BroadcastChat(cChatColor.Green.. "(+) " .. cChatColor.LightGreen .. Player:GetName())
 	Player:GetClientHandle():SendSetTitle(cCompositeChat():AddTextPart(JoinTitle))
 	Player:GetClientHandle():SendSetSubTitle((cCompositeChat():AddTextPart(JoinSubtitle)))
 	Player:GetClientHandle():SendTitleTimes(10, 160, 5)
-	return true
-end
-
-function OnPlayerDestroyed(Player)
-	ParticlePlayers[Player:GetUUID()] = nil
-	cRoot:Get():BroadcastChat(cChatColor.Red.. "(-) " .. cChatColor.Rose .. Player:GetName()) 
-	return true
 end
 
 function OnPlayerMoving(Player, OldPosition, NewPosition)
@@ -321,9 +317,9 @@ function OnPlayerMoving(Player, OldPosition, NewPosition)
 	local NetherHub = cBoundingBox(Vector3d(X - 5, Y, Z - 7), Vector3d(X - 1, Y + 25, Z + 6))
 
 	-- Portal coordinates
-	local HubToEnd = cBoundingBox(Vector3d(X - 14, Y, Z - 3), Vector3d(X - 13, Y + 5, Z + 3))
-	local HubToNether = cBoundingBox(Vector3d(X + 13, Y, Z - 3), Vector3d(X + 14, Y + 5, Z + 3))
-	local HubToOverworld = cBoundingBox(Vector3d(X - 3, Y, Z - 14), Vector3d(X + 3, Y + 5, Z - 13))
+	local HubToEnd = cBoundingBox(Vector3d(X - 20, Y, Z - 4), Vector3d(X - 13, Y + 5, Z + 4))
+	local HubToNether = cBoundingBox(Vector3d(X + 13, Y, Z - 4), Vector3d(X + 20, Y + 5, Z + 4))
+	local HubToOverworld = cBoundingBox(Vector3d(X - 4, Y, Z - 20), Vector3d(X + 4, Y + 5, Z - 13))
 	local OverworldToHub = cBoundingBox(Vector3d(X - 1, Y, Z + 5), Vector3d(X + 1, Y + 4, Z + 6))
 	local NetherToHub = cBoundingBox(Vector3d(X - 6, Y, Z - 1), Vector3d(X - 5, Y + 4, Z + 1))
 
@@ -337,17 +333,17 @@ function OnPlayerMoving(Player, OldPosition, NewPosition)
 			IsInside[Player:GetUUID()] = 1
 		elseif HubFlatlands:IsInside(NewPosition) and IsInside[Player:GetUUID()] ~= 2 then
 			Player:GetClientHandle():SendSetTitle((cCompositeChat()))
-			Player:GetClientHandle():SendSetSubTitle((cCompositeChat():AddTextPart(cChatColor.Green .. cChatColor.Bold .. "Flatlands")))
+			Player:GetClientHandle():SendSetSubTitle((cCompositeChat():AddTextPart(cChatColor.LightGreen .. cChatColor.Bold .. "Flatlands")))
 			Player:GetClientHandle():SendTitleTimes(10, 100, 5)
 			IsInside[Player:GetUUID()] = 2
 		elseif HubOverworld:IsInside(NewPosition) and IsInside[Player:GetUUID()] ~= 3 then
 			Player:GetClientHandle():SendSetTitle((cCompositeChat()))
-			Player:GetClientHandle():SendSetSubTitle((cCompositeChat():AddTextPart(cChatColor.Green .. cChatColor.Bold .. "Overworld")))
+			Player:GetClientHandle():SendSetSubTitle((cCompositeChat():AddTextPart(cChatColor.LightGreen .. cChatColor.Bold .. "Overworld")))
 			Player:GetClientHandle():SendTitleTimes(10, 100, 5)
 			IsInside[Player:GetUUID()] = 3
 		elseif HubNether:IsInside(NewPosition) and IsInside[Player:GetUUID()] ~= 4 then
 			Player:GetClientHandle():SendSetTitle((cCompositeChat()))
-			Player:GetClientHandle():SendSetSubTitle((cCompositeChat():AddTextPart(cChatColor.Red .. cChatColor.Bold .. "Nether")))
+			Player:GetClientHandle():SendSetSubTitle((cCompositeChat():AddTextPart(cChatColor.Rose .. cChatColor.Bold .. "Nether")))
 			Player:GetClientHandle():SendTitleTimes(10, 100, 5)
 			IsInside[Player:GetUUID()] = 4
 		elseif HubEnd:IsInside(NewPosition) and IsInside[Player:GetUUID()] ~= 5 then	
@@ -381,7 +377,7 @@ function OnPlayerMoving(Player, OldPosition, NewPosition)
 			IsInside[Player:GetUUID()] = nil
 		elseif OverworldWelcome:IsInside(NewPosition) and IsInside[Player:GetUUID()] ~= 10 then
 			Player:GetClientHandle():SendSetTitle((cCompositeChat()))
-			Player:GetClientHandle():SendSetSubTitle((cCompositeChat():AddTextPart(cChatColor.White.. "Welcome to the " .. cChatColor.Green .. cChatColor.Bold .. "Overworld")))
+			Player:GetClientHandle():SendSetSubTitle((cCompositeChat():AddTextPart(cChatColor.White.. "Welcome to the " .. cChatColor.LightGreen .. cChatColor.Bold .. "Overworld")))
 			Player:GetClientHandle():SendTitleTimes(10, 100, 5)
 			IsInside[Player:GetUUID()] = 10
 		elseif OverworldHub:IsInside(NewPosition) and IsInside[Player:GetUUID()] ~= 11 then
@@ -400,7 +396,7 @@ function OnPlayerMoving(Player, OldPosition, NewPosition)
 			IsInside[Player:GetUUID()] = nil
 		elseif NetherWelcome:IsInside(NewPosition) and IsInside[Player:GetUUID()] ~= 13 then
 			Player:GetClientHandle():SendSetTitle((cCompositeChat()))
-			Player:GetClientHandle():SendSetSubTitle((cCompositeChat():AddTextPart(cChatColor.White.. "Welcome to the " .. cChatColor.Red .. cChatColor.Bold .. "Nether")))
+			Player:GetClientHandle():SendSetSubTitle((cCompositeChat():AddTextPart(cChatColor.White.. "Welcome to the " .. cChatColor.Rose .. cChatColor.Bold .. "Nether")))
 			Player:GetClientHandle():SendTitleTimes(10, 100, 5)
 			IsInside[Player:GetUUID()] = 13
 		elseif NetherHub:IsInside(NewPosition) and IsInside[Player:GetUUID()] ~= 14 then
@@ -426,17 +422,20 @@ end
 function OnSpawningEntity(World, Entity)
 	if Entity:IsMob() then
 		MobCount = MobCount + 1
-		if MobCount > 20 then
+		if MobCount > 15 then
 			return true
 		end
 	end
 
 	if Entity:IsPickup() then
-		return true
+		if not Entity:IsPlayerCreated() or BlacklistedPickupIDs[Entity:GetItem().m_ItemType] then
+			return true
+		end
 	end
 
-	if IsInSpawn(Entity:GetPosX(), Entity:GetPosY(), Entity:GetPosZ(), World:GetName()) then
-		if Entity:GetEntityType() == cEntity.etMob and Entity:GetMobType() == mtSnowGolem or Entity:IsFallingBlock() or Entity:IsTNT() or Entity:IsItemFrame() or Entity:IsPainting() then
+	if Entity:IsTNT() then
+		TNTCount = TNTCount + 1
+		if TNTCount > 30 then
 			return true
 		end
 	end
@@ -448,11 +447,15 @@ function OnTick(TimeDelta)
 		ExplosionCount = 0
 		GlobalTime = 0
 		MobCount = 0
+		TNTCount = 0
 		cRoot:Get():ForEachPlayer(
 			function(Player)
-				CanMessage[Player:GetUUID()] = true
+				CanMessage[Player:GetUUID()] = nil
 			end
 		)
+
+		-- Overwrite spawn by using schematic
+		Area:Write(cRoot:Get():GetWorld("flatlands"), -24, 0, -24)
 
 		-- If the server is stuck, this file won't update. An OS-side script checks when the file was last modified, and restarts the server if too much time has passed since the last modification.
 		os.remove("update")
@@ -472,30 +475,9 @@ function OnUpdatingSign(World, BlockX, BlockY, BlockZ, Line1, Line2, Line3, Line
 	return false, Line1, Line2, Line3, Line4
 end
 
-function OnWorldTick(World, TimeDelta)
-	World:ForEachPlayer(
-		function(Player)
-			-- Checks if player is using nuker in spawn
-			if NukerTime == 1 then
-				BreakTime = 0
-				CanBreak[Player:GetUUID()] = true
-			else
-				NukerTime = NukerTime + 1
-			end
-
-			-- Creates particles around the player
-			if ParticlePlayers[Player:GetUUID()] == "note" then
-				Player:GetWorld():BroadcastParticleEffect("note", Player:GetPosX(), Player:GetPosY(), Player:GetPosZ(), 0.5, 1, 0.5, math.random(1, 16), 10)
-			elseif ParticlePlayers[Player:GetUUID()] ~= nil then
-				Player:GetWorld():BroadcastParticleEffect(ParticlePlayers[Player:GetUUID()], Player:GetPosX(), Player:GetPosY(), Player:GetPosZ(), 0.5, 1, 0.5, 0, 10)
-			end
-		end
-	)
-end
-
 -- Prevents players from using WorldEdit in spawn
 function WorldEditCallback(AffectedAreaCuboid, Player, World, Operation)
-	local ProtectedCuboid = cCuboid(World:GetSpawnX() - 22, -1000, World:GetSpawnZ() - 22, World:GetSpawnX() + 21, 1000, World:GetSpawnZ() + 21)
+	local ProtectedCuboid = cCuboid(World:GetSpawnX() - 41, -1000, World:GetSpawnZ() - 41, World:GetSpawnX() + 40, 1000, World:GetSpawnZ() + 40)
 
 	if ProtectedCuboid:DoesIntersect(AffectedAreaCuboid) then
 		Player:SendAboveActionBarMessage(BuildError)

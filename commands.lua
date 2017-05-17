@@ -2,16 +2,6 @@
 local Rules = "Do whatever you want! ;)"
 
 -- General
-function GetValue(list)
-	local value = {}
-	for k, v in ipairs(list) do 
-		value[v] = true
-	end
-	return value
-end
-
-local ParticleTypes = GetValue { "explode", "largeexplode", "fireworksspark", "bubble", "splash", "wake", "suspended", "depthsuspend", "crit", "magiccrit", "smoke", "largesmoke", "spell", "instantspell", "mobspell", "mobspellambient", "witchmagic", "dripwater", "driplava", "angryvillager", "happyvillager", "townaura", "note", "portal", "enchantmenttable", "flame", "lava", "footstep", "reddust", "snowballpoof", "slime", "heart", "barrier", "cloud", "snowshovel", "droplet", "endrod", "dragonbreath", "sweepattack", "spit", "totem" }
-
 function HandleActionBarBroadcastCommand(Split, Player)
 	if Split[2] == nil then
 		Player:SendMessageInfo("Usage: " .. Split[1] .. " <message ...>")
@@ -31,7 +21,7 @@ function HandleBroadcastCommand(Split, Player)
 	if Split[2] == nil then
 		Player:SendMessageInfo("Usage: " .. Split[1] .. " <message ...>")
 	else
-		local Message = table.concat(Split, " ", 2):gsub("&0", cChatColor.Black):gsub("&1", cChatColor.Navy):gsub("&2", cChatColor.Green):gsub("&3", cChatColor.Blue):gsub("&4", cChatColor.Red):gsub("&5", cChatColor.Purple):gsub("&6", cChatColor.Gold):gsub("&7", cChatColor.LightGray):gsub("&8", cChatColor.Gray):gsub("&9", cChatColor.DarkPurple):gsub("&a", cChatColor.LightGreen):gsub("&b", cChatColor.LightBlue):gsub("&c", cChatColor.Rose):gsub("&d", cChatColor.LightPurple):gsub("&e", cChatColor.Yellow):gsub("&f", cChatColor.White):gsub("&k", cChatColor.Random) :gsub("&l", cChatColor.Bold):gsub("&m", cChatColor.Strikethrough):gsub("&n", cChatColor.Underlined):gsub("&o", cChatColor.Italic):gsub("&r", cChatColor.Plain)
+		local Message = table.concat(Split, " ", 2):gsub("&0", cChatColor.Black):gsub("&1", cChatColor.Navy):gsub("&2", cChatColor.Green):gsub("&3", cChatColor.Blue):gsub("&4", cChatColor.Red):gsub("&5", cChatColor.Purple):gsub("&6", cChatColor.Gold):gsub("&7", cChatColor.LightGray):gsub("&8", cChatColor.Gray):gsub("&9", cChatColor.DarkPurple):gsub("&a", cChatColor.LightGreen):gsub("&b", cChatColor.LightBlue):gsub("&c", cChatColor.Rose):gsub("&d", cChatColor.LightPurple):gsub("&e", cChatColor.Yellow):gsub("&f", cChatColor.White):gsub("&k", cChatColor.Random):gsub("&l", cChatColor.Bold):gsub("&m", cChatColor.Strikethrough):gsub("&n", cChatColor.Underlined):gsub("&o", cChatColor.Italic):gsub("&r", cChatColor.Plain)
 
 		cRoot:Get():BroadcastChat(cChatColor.Red .. "[BROADCAST] " .. cChatColor.Rose .. Message)
 	end
@@ -82,7 +72,7 @@ function HandleConsoleCommand(Split, Player)
 	if Split[2] == nil then
 		Player:SendMessageInfo("Usage: " .. Split[1] .. " <message ...>")
 	else
-		local Message = table.concat(Split, " " , 2):gsub("&0", cChatColor.Black):gsub("&1", cChatColor.Navy):gsub("&2", cChatColor.Green):gsub("&3", cChatColor.Blue):gsub("&4", cChatColor.Red):gsub("&5", cChatColor.Purple):gsub("&6", cChatColor.Gold):gsub("&7", cChatColor.LightGray):gsub("&8", cChatColor.Gray):gsub("&9", cChatColor.DarkPurple):gsub("&a", cChatColor.LightGreen):gsub("&b", cChatColor.LightBlue):gsub("&c", cChatColor.Rose) :gsub("&d", cChatColor.LightPurple):gsub("&e", cChatColor.Yellow):gsub("&f", cChatColor.White):gsub("&k", cChatColor.Random) :gsub("&l", cChatColor.Bold):gsub("&m", cChatColor.Strikethrough):gsub("&n", cChatColor.Underlined):gsub("&o", cChatColor.Italic):gsub("&r", cChatColor.Plain)
+		local Message = table.concat(Split, " " , 2):gsub("&0", cChatColor.Black):gsub("&1", cChatColor.Navy):gsub("&2", cChatColor.Green):gsub("&3", cChatColor.Blue):gsub("&4", cChatColor.Red):gsub("&5", cChatColor.Purple):gsub("&6", cChatColor.Gold):gsub("&7", cChatColor.LightGray):gsub("&8", cChatColor.Gray):gsub("&9", cChatColor.DarkPurple):gsub("&a", cChatColor.LightGreen):gsub("&b", cChatColor.LightBlue):gsub("&c", cChatColor.Rose):gsub("&d", cChatColor.LightPurple):gsub("&e", cChatColor.Yellow):gsub("&f", cChatColor.White):gsub("&k", cChatColor.Random):gsub("&l", cChatColor.Bold):gsub("&m", cChatColor.Strikethrough):gsub("&n", cChatColor.Underlined):gsub("&o", cChatColor.Italic):gsub("&r", cChatColor.Plain)
 
 		cRoot:Get():BroadcastChat(cChatColor.Gray .. "[CONSOLE] " .. cChatColor.White .. Message)
 	end
@@ -159,8 +149,8 @@ function HandleFoodLevelCommand(Split, Player)
 		cRoot:Get():ForEachPlayer(FoodLevel)
 		Player:SendMessageSuccess("Successfully set food level of every player to " .. tonumber(Split[2]))
 	elseif Player:HasPermission("extras.foodlevel.other") then
-		if not cRoot:Get():FindAndDoWithPlayer(Split[3], FoodLevel) then
-			Player:SendMessageFailure("Player \"" .. Split[3] .. "\" not found")
+		if not cRoot:Get():FindAndDoWithPlayer(table.concat(Split, " ", 3), FoodLevel) then
+			Player:SendMessageFailure("Player \"" .. table.concat(Split, " ", 3) .. "\" not found")
 		end
 	end
 	return true
@@ -188,8 +178,8 @@ function HandleJumpscareCommand(Split, Player)
 	elseif Split[2] == "*" or Split[2] == "**" then
 		cRoot:Get():ForEachPlayer(Jumpscare)
 		Player:SendMessageSuccess("Successfully created jumpscare for every player")
-	elseif not cRoot:Get():FindAndDoWithPlayer(Split[2], Jumpscare) then
-		Player:SendMessageFailure("Player \"" .. Split[2] ..  "\" not found")
+	elseif not cRoot:Get():FindAndDoWithPlayer(table.concat(Split, " ", 2), Jumpscare) then
+		Player:SendMessageFailure("Player \"" .. table.concat(Split, " ", 2) ..  "\" not found")
 	end
 	return true
 end
@@ -258,8 +248,8 @@ function HandleKitCommand(Split, Player)
 		if Split[3] == "*" or Split[3] == "**" then
 			cRoot:Get():ForEachPlayer(GiveKit)
 			Player:SendMessageSuccess("Successfully gave kit \"" .. Split[2] .. "\" to every player")
-		elseif not cRoot:Get():FindAndDoWithPlayer(Split[3], Kit) then
-			Player:SendMessageFailure("Player \"" .. Split[3] .. "\" not found")
+		elseif not cRoot:Get():FindAndDoWithPlayer(table.concat(Split, " ", 3), GiveKit) then
+			Player:SendMessageFailure("Player \"" .. table.concat(Split, " ", 3) .. "\" not found")
 		end
 	end
 	return true
@@ -275,7 +265,7 @@ function HandleMeCommand(Split, Player)
 		else
 			PlayerName = NickList[Player:GetUUID()]
 		end
-		local Message = table.concat(Split, " ", 2):gsub("&0", cChatColor.Black):gsub("&1", cChatColor.Navy):gsub("&2", cChatColor.Green):gsub("&3", cChatColor.Blue):gsub("&4", cChatColor.Red):gsub("&5", cChatColor.Purple):gsub("&6", cChatColor.Gold):gsub("&7", cChatColor.LightGray):gsub("&8", cChatColor.Gray):gsub("&9", cChatColor.DarkPurple):gsub("&a", cChatColor.LightGreen):gsub("&b", cChatColor.LightBlue):gsub("&c", cChatColor.Rose):gsub("&d", cChatColor.LightPurple):gsub("&e", cChatColor.Yellow):gsub("&f", cChatColor.White):gsub("&k", cChatColor.Random) :gsub("&l", cChatColor.Bold):gsub("&m", cChatColor.Strikethrough):gsub("&n", cChatColor.Underlined):gsub("&o", cChatColor.Italic):gsub("&r", cChatColor.Plain)
+		local Message = table.concat(Split, " ", 2):gsub("&0", cChatColor.Black):gsub("&1", cChatColor.Navy):gsub("&2", cChatColor.Green):gsub("&3", cChatColor.Blue):gsub("&4", cChatColor.Red):gsub("&5", cChatColor.Purple):gsub("&6", cChatColor.Gold):gsub("&7", cChatColor.LightGray):gsub("&8", cChatColor.Gray):gsub("&9", cChatColor.DarkPurple):gsub("&a", cChatColor.LightGreen):gsub("&b", cChatColor.LightBlue):gsub("&c", cChatColor.Rose):gsub("&d", cChatColor.LightPurple):gsub("&e", cChatColor.Yellow):gsub("&f", cChatColor.White):gsub("&k", cChatColor.Random):gsub("&l", cChatColor.Bold):gsub("&m", cChatColor.Strikethrough):gsub("&n", cChatColor.Underlined):gsub("&o", cChatColor.Italic):gsub("&r", cChatColor.Plain)
 
 		cRoot:Get():BroadcastChat("* " .. PlayerName .. " " .. cChatColor.White .. Message)
 	end
@@ -283,9 +273,9 @@ function HandleMeCommand(Split, Player)
 end
 
 function HandleMemoryCommand( Split, Player )
-	Player:SendMessageInfo("Current RAM usage: " .. cRoot:GetPhysicalRAMUsage() / 1024 .. " MB")
-	Player:SendMessageInfo("Current swap usage: " .. cRoot:GetVirtualRAMUsage() / 1024 .. " MB")
-	Player:SendMessageInfo("Total memory usage: " .. cRoot:GetPhysicalRAMUsage() / 1024 + cRoot:GetVirtualRAMUsage() / 1024 .. " MB")
+	Player:SendMessageInfo("Current RAM usage: " .. math.floor(cRoot:GetPhysicalRAMUsage() / 1024 + 0.5) .. " MB")
+	Player:SendMessageInfo("Current swap usage: " .. math.floor(cRoot:GetVirtualRAMUsage() / 1024 + 0.5) .. " MB")
+	Player:SendMessageInfo("Total memory usage: " .. math.floor(cRoot:GetPhysicalRAMUsage() / 1024 + cRoot:GetVirtualRAMUsage() / 1024 + 0.5) .. " MB")
 	Player:SendMessageInfo("Current loaded chunks: " .. cRoot:Get():GetTotalChunkCount())
 	return true
 end
@@ -352,19 +342,14 @@ function HandlePumpkinCommand(Split, Player)
 	elseif Split[2] == "*" or Split[2] == "**" then
 		cRoot:Get():ForEachPlayer(Pumpkin)
 		Player:SendMessageSuccess("Everyone is now a pumpkin")
-	elseif not cRoot:Get():FindAndDoWithPlayer(Split[2], Pumpkin) then
-		Player:SendMessageFailure("Player \"" .. Split[2] .. "\" not found")
+	elseif not cRoot:Get():FindAndDoWithPlayer(table.concat(Split, " ", 2), Pumpkin) then
+		Player:SendMessageFailure("Player \"" .. table.concat(Split, " ", 2) .. "\" not found")
 	end
 	return true
 end
 
-function HandleReloadCommand(Split, Player)
-	cRoot:Get():BroadcastChat(cChatColor.Rose .. "Server is reloading plugins...")
-	return true
-end
-
 function HandleRestartCommand( Split, Player )
-	cRoot:Get():BroadcastChat(cChatColor.Rose .. "Please wait a few seconds. Server is restarting...")
+	cRoot:Get():BroadcastChat(cChatColor.Red .. "[WARNING] " .. cChatColor.White .. "Server is restarting!")
 	return true
 end
 
@@ -410,15 +395,10 @@ function HandleStarveCommand(Split, Player)
 		if Split[2] == "*" or Split[2] == "**" then
 			cRoot:Get():ForEachPlayer(Starve)
 			Player:SendMessageSuccess("Every player is now starving")
-		elseif not cRoot:Get():FindAndDoWithPlayer(Split[2], Starve) then
-			Player:SendMessageFailure("Player \"" .. Split[2] .. "\" not found")
+		elseif not cRoot:Get():FindAndDoWithPlayer(table.concat(Split, " ", 2), Starve) then
+			Player:SendMessageFailure("Player \"" .. table.concat(Split, " ", 2) .. "\" not found")
 		end
 	end
-	return true
-end
-
-function HandleStopCommand(Split, Player)
-	cRoot:Get():BroadcastChat(cChatColor.Rose .. "Please wait a few seconds. Server is shutting down...")
 	return true
 end
 
@@ -427,115 +407,196 @@ function HandleSuicideCommand(Split, Player)
 	return true
 end
 
--- TODO: improve summon
 function HandleSummonCommand(Split, Player)
 	if Split[2] == nil then
-		Player:SendMessageInfo("Usage: " .. Split[1] .. " <entity> [x] [y] [z]")
+		Player:SendMessageInfo("Usage: " .. Split[1] .. " <entityname> [x] [y] [z]")
 	else
-		local PosX = Player:GetPosX()
-		local PosY = Player:GetPosY()
-		local PosZ = Player:GetPosZ()
+		local X = Player:GetPosX()
+		local Y = Player:GetPosY()
+		local Z = Player:GetPosZ()
 		local World = Player:GetWorld()
-		local EntityPosX = Split[3]
-		local EntityPosY = Split[4]
-		local EntityPosZ = Split[5]
-		local EntityPosX = tonumber(EntityPosX)
-		local EntityPosY = tonumber(EntityPosY)
-		local EntityPosZ = tonumber(EntityPosZ)
-		local MobID = Split[2]:gsub("EnderDragon", 63)
-				:gsub("WitherBoss", 64)
-				:gsub("Bat", 65)
-				:gsub("Blaze", 61)
-				:gsub("CaveSpider", 59)
-				:gsub("Chicken", 93)
-				:gsub("Cow", 92)
-				:gsub("Creeper", 50)
-				:gsub("Enderman", 58)
-				:gsub("Ghast", 56)
-				:gsub("Giant", 53)
-				:gsub("Guardian", 68)
-				:gsub("Horse", 100)
-				:gsub("VillagerGolem", 99)
-				:gsub("LavaSlime", 62)
-				:gsub("MushroomCow", 96)
-				:gsub("Ozelot", 98)
-				:gsub("Pig", 90)
-				:gsub("Rabbit", 101)
-				:gsub("Sheep", 91)
-				:gsub("Silverfish", 60)
-				:gsub("Skeleton", 51)
-				:gsub("Slime", 55)
-				:gsub("SnowMan", 97)
-				:gsub("Spider", 52)
-				:gsub("Squid", 94)
-				:gsub("Villager", 120)
-				:gsub("Witch", 66)
-				:gsub("Wolf", 95)
-				:gsub("Zombie", 54)
-				:gsub("PigZombie", 57)
-		local ProjectileID = Split[2]:gsub("Arrow", 60)
-				:gsub("ThrownEgg", 62)
-				:gsub("ThrownEnderpearl", 65)
-				:gsub("ThrownExpBottle", 75)
-				:gsub("SmallFireball", 64)
-				:gsub("FireworksRocketEntity", 76)
-				:gsub("FishingFloat", 90)
-				:gsub("Fireball", 63)
-				:gsub("Snowball", 61)
-				:gsub("ThrownPotion", 73)
-				:gsub("WitherSkull", 66)
-		local MinecartID = Split[2]:gsub("MinecartRideable", 328)
-				:gsub("MinecartChest", 342)
-				:gsub("MinecartFurnace", 343)
-				:gsub("MinecartTNT", 407)
-				:gsub("MinecartHopper", 408)
 
-		if tonumber(MobID) or tonumber(MinecartID) or tonumber(ProjectileID) or Split[2] == "Boat" or Split[2] == "XPOrb" or Split[2] == "PrimedTnt" or Split[2] == "FallingSand" or Split[2] == "LightningBolt" then
-			if Split[5] == nil then
-				if Split[2] == "Boat" then
-					World:SpawnBoat(PosX, PosY, PosZ)
-				elseif Split[2] == "XPOrb" then
-					World:SpawnExperienceOrb(PosX, PosY, PosZ, 1)
-				elseif Split[2] == "PrimedTnt" then
-					World:SpawnPrimedTNT(PosX, PosY, PosZ)
-				elseif Split[2] == "FallingSand" then
-					World:SpawnFallingBlock(PosX, PosY, PosZ, 12, 0)
-				elseif Split[2] == "LightningBolt" then
-					World:CastThunderbolt(PosX, PosY, PosZ)
-				elseif tonumber(ProjectileID) then
-					World:CreateProjectile(PosX, PosY, PosZ, ProjectileID, Player, Player:GetEquippedItem(), Player:GetLookVector() * 20)
-				elseif tonumber(MinecartID) then
-					World:SpawnMinecart(PosX, PosY, PosZ, MinecartID)
-				else
-					World:SpawnMob(PosX, PosY, PosZ, MobID)
-				end
-				Player:SendMessageSuccess("Successfully spawned entity \"" .. Split[2] .. "\"")
-			else
-				if EntityPosX ~= nil and EntityPosY ~= nil and EntityPosZ ~= nil then
-					if Split[2] == "Boat" then
-						World:SpawnBoat(EntityPosX, EntityPosY, EntityPosZ)
-					elseif Split[2] == "XPOrb" then
-						World:SpawnExperienceOrb(EntityPosX, EntityPosY, EntityPosZ, 1)
-					elseif Split[2] == "PrimedTnt" then
-						World:SpawnPrimedTNT(EntityPosX, EntityPosY, EntityPosZ)
-					elseif Split[2] == "FallingSand" then
-						World:SpawnFallingBlock(EntityPosX, EntityPosY, EntityPosZ, 12, 0)
-					elseif Split[2] == "LightningBolt" then
-						World:CastThunderbolt(EntityPosX, EntityPosY, EntityPosZ)
-					elseif tonumber(ProjectileID) then
-						World:CreateProjectile(EntityPosX, EntityPosY, EntityPosZ, ProjectileID, Player, Player:GetEquippedItem(), Player:GetLookVector() * 20)
-					elseif tonumber(MinecartID) then
-						World:SpawnMinecart(EntityPosX, EntityPosY, EntityPosZ, MinecartID)
-					else
-						World:SpawnMob(EntityPosX, EntityPosY, EntityPosZ, MobID)
-					end
-					Player:SendMessageSuccess("Successfully spawned entity \"" .. Split[2] .. "\" at coordinates X:" .. Split[3] .. ", Y:" .. Split[4] .. ", Z:" .. Split[5])
-				else
-					Player:SendMessageFailure("Invalid coordinates")
-				end
+		local Minecarts =
+		{
+			["minecart"] = E_ITEM_MINECART,
+			["chest_minecart"] = E_ITEM_CHEST_MINECART,
+			["furnace_minecart"] = E_ITEM_FURNACE_MINECART,
+			["hopper_minecart"] = E_ITEM_MINECART_WITH_HOPPER,
+			["tnt_minecart"] = E_ITEM_MINECART_WITH_TNT,
+
+			-- 1.10 and below
+			["MinecartChest"] = E_ITEM_CHEST_MINECART,
+			["MinecartFurnace"] = E_ITEM_FURNACE_MINECART,
+			["MinecartHopper"] = E_ITEM_MINECART_WITH_HOPPER,
+			["MinecartRideable"] = E_ITEM_MINECART,
+			["MinecartTNT"] = E_ITEM_MINECART_WITH_TNT
+		}
+
+		local Mobs = 
+		{
+			["bat"] = mtBat,
+			["blaze"] = mtBlaze,
+			["cave_spider"] = mtCaveSpider,
+			["chicken"] = mtChicken,
+			["cow"] = mtCow,
+			["creeper"] = mtCreeper,
+			["ender_dragon"] = mtEnderDragon,
+			["enderman"] = mtEnderman,
+			["ghast"] = mtGhast,
+			["giant"] = mtGiant,
+			["guardian"] = mtGuardian,
+			["horse"] = mtHorse,
+			["iron_golem"] = mtIronGolem,
+			["magma_cube"] = mtMagmaCube,
+			["mooshroom"] = mtMooshroom,
+			["ocelot"] = mtOcelot,
+			["pig"] = mtPig,
+			["rabbit"] = mtRabbit,
+			["sheep"] = mtSheep,
+			["silverfish"] = mtSilverfish,
+			["skeleton"] = mtSkeleton,
+			["slime"] = mtSlime,
+			["snowman"] = mtSnowGolem,
+			["spider"] = mtSpider,
+			["squid"] = mtSquid,
+			["villager"] = mtVillager,
+			["witch"] = mtWitch,
+			["wither"] = mtWither,
+			["wolf"] = mtWolf,
+			["zombie"] = mtZombie,
+			["zombie_pigman"] = mtZombiePigman,
+
+			-- 1.10 and below
+			["Bat"] = mtBat,
+			["Blaze"] = mtBlaze,
+			["CaveSpider"] = mtCaveSpider,
+			["Chicken"] = mtChicken,
+			["Cow"] = mtCow,
+			["Creeper"] = mtCreeper,
+			["EnderDragon"] = mtEnderDragon,
+			["Enderman"] = mtEnderman,
+			["Ghast"] = mtGhast,
+			["Giant"] = mtGiant,
+			["Guardian"] = mtGuardian,
+			["Horse"] = mtHorse,
+			["LavaSlime"] = mtMagmaCube,
+			["MushroomCow"] = mtMooshroom,
+			["Ozelot"] = mtOcelot,
+			["Pig"] = mtPig,
+			["Rabbit"] = mtRabbit,
+			["Sheep"] = mtSheep,
+			["Silverfish"] = mtSilverfish,
+			["Skeleton"] = mtSkeleton,
+			["Slime"] = mtSlime,
+			["SnowMan"] = mtSnowGolem,
+			["Spider"] = mtSpider,
+			["Squid"] = mtSquid,
+			["Villager"] = mtVillager,
+			["VillagerGolem"] = mtIronGolem,
+			["Witch"] = mtWitch,
+			["Wither"] = mtWither,
+			["Wolf"] = mtWolf,
+			["Zombie"] = mtZombie,
+			["PigZombie"] = mtZombiePigman
+		}
+
+		local Projectiles =
+		{
+			["arrow"] = cProjectileEntity.pkArrow,
+			["egg"] = cProjectileEntity.pkEgg,
+			["ender_pearl"] = cProjectileEntity.pkEnderPearl,
+			["fireworks_rocket"] = cProjectileEntity.pkFirework,
+			["fishing_float"] = cProjectileEntity.pkFishingFloat,
+			["fireball"] = cProjectileEntity.pkGhastFireball,
+			["potion"] = cProjectileEntity.pkSplashPotion,
+			["small_fireball"] = cProjectileEntity.pkFireCharge,
+			["snowball"] = cProjectileEntity.pkSnowball,
+			["wither_skull"] = cProjectileEntity.pkWitherSkull,
+			["xp_bottle"] = cProjectileEntity.pkExpBottle,
+
+			-- 1.10 and below
+			["Arrow"] = cProjectileEntity.pkArrow,
+			["Fireball"] = cProjectileEntity.pkGhastFireball,
+			["FireworksRocketEntity"] = cProjectileEntity.pkFirework,
+			["FishingFloat"] = cProjectileEntity.pkFishingFloat,
+			["SmallFireball"] = cProjectileEntity.pkFireCharge,
+			["Snowball"] = cProjectileEntity.pkSnowball,
+			["ThrownEgg"] = cProjectileEntity.pkEgg,
+			["ThrownEnderpearl"] = cProjectileEntity.pkEnderPearl,
+			["ThrownExpBottle"] = cProjectileEntity.pkExpBottle,
+			["ThrownPotion"] = cProjectileEntity.pkSplashPotion,
+			["WitherSkull"] = cProjectileEntity.pkWitherSkull
+		}
+
+		if Split[3] ~= nil then
+			X = tonumber(Split[3])
+			local RelativeX = loadstring(Split[3]:gsub("~", "return " .. Player:GetPosX() .. "+0"))
+			if RelativeX then
+				X = select(2, pcall(setfenv(RelativeX, {})))
 			end
+		end
+
+		if Split[4] ~= nil then
+			Y = tonumber(Split[4])
+			local RelativeY = loadstring(Split[4]:gsub("~", "return " .. Player:GetPosY() .. "+0"))
+			if RelativeY then
+				Y = select(2, pcall(setfenv(RelativeY, {})))
+			end
+		end
+
+		if Split[5] ~= nil then
+			Z = tonumber(Split[5])
+			local RelativeZ = loadstring(Split[5]:gsub("~", "return " .. Player:GetPosZ() .. "+0"))
+			if RelativeZ then
+				Z = select(2, pcall(setfenv(RelativeZ, {})))
+			end
+		end
+
+		if X == nil then
+			Player:SendMessageFailure("\"" .. Split[3] .. "\" is not a valid number")
+			return true
+		end
+
+		if Y == nil then
+			Player:SendMessageFailure("\"" .. Split[4] .. "\" is not a valid number")
+			return true
+		end
+
+		if Z == nil then
+			Player:SendMessageFailure("\"" .. Split[5] .. "\" is not a valid number")
+			return true
+		end
+
+		local function Success()
+			Player:SendMessageSuccess("Successfully summoned entity at [X:" .. math.floor(X) .. " Y:" .. math.floor(Y) .. " Z:" .. math.floor(Z) .. "]")
+		end
+
+		if Split[2] == "boat" or Split[2] == "Boat" then
+			World:SpawnBoat(X, Y, Z)
+			Success()
+		elseif Split[2] == "falling_block" or Split[2] == "FallingSand" then
+			World:SpawnFallingBlock(X, Y, Z, 12, 0)
+			Success()
+		elseif Split[2] == "lightning_bolt" or Split[2] == "LightningBolt" then
+			World:CastThunderbolt(X, Y, Z)
+			Success()
+		elseif Minecarts[Split[2]] then
+			World:SpawnMinecart(X, Y, Z, Minecarts[Split[2]])
+			Success()
+		elseif Mobs[Split[2]] then
+			World:SpawnMob(X, Y, Z, Mobs[Split[2]])
+			Success()
+		elseif Projectiles[Split[2]] then
+			World:CreateProjectile(X, Y, Z, Projectiles[Split[2]], Player, Player:GetEquippedItem(), Player:GetLookVector() * 20)
+			Success()
+		elseif Split[2] == "tnt" or Split[2] == "PrimedTnt" then
+			World:SpawnPrimedTNT(X, Y, Z)
+			Success()
+		elseif Split[2] == "xp_orb" or Split[2] == "XPOrb" then
+			World:SpawnExperienceOrb(X, Y, Z, 1)
+			Success()
 		else
-			Player:SendMessageFailure("Unknown entity type \"" .. Split[2] .. "\"")
+			Player:SendMessageFailure("Unknown entity '" .. Split[2] .. "'")
 		end
 	end
 	return true
@@ -552,35 +613,25 @@ function HandleTellrawCommand(Split, Player)
 	return true
 end
 
-function HandleTrailCommand(Split, Player)
+function HandleTitleCommand(Split, Player)
 	if Split[2] == nil then
-		local ListParticles = ""
-		for key, value in pairs(ParticleTypes) do
-			ListParticles = ListParticles .. key .. ", "
-		end
-		Player:SendMessageInfo("Usage: " .. Split[1] .. " <particle>")
-		Player:SendMessageInfo("Available particles: " .. ListParticles:sub(1, ListParticles:len() - 2))
-	elseif Split[2] == "off" then
-		ParticlePlayers[Player:GetUUID()] = nil
-		Player:SendMessageInfo("You no longer have a particle trail")
+		Player:SendMessageInfo("Usage: " .. Split[1] .. " <text ...>")
 	else
-		if ParticleTypes[Split[2]] then
-			ParticlePlayers[Player:GetUUID()] = Split[2]
-			Player:SendMessageSuccess("You now have a particle trail")
-		else
-			Player:SendMessageFailure("Invalid particle name")
-		end
-		return true
+		local Message = table.concat(Split, " ", 2):gsub("&0", cChatColor.Black):gsub("&1", cChatColor.Navy):gsub("&2", cChatColor.Green):gsub("&3", cChatColor.Blue):gsub("&4", cChatColor.Red):gsub("&5", cChatColor.Purple):gsub("&6", cChatColor.Gold):gsub("&7", cChatColor.LightGray):gsub("&8", cChatColor.Gray):gsub("&9", cChatColor.DarkPurple):gsub("&a", cChatColor.LightGreen):gsub("&b", cChatColor.LightBlue):gsub("&c", cChatColor.Rose):gsub("&d", cChatColor.LightPurple):gsub("&e", cChatColor.Yellow):gsub("&f", cChatColor.White):gsub("&k", cChatColor.Random):gsub("&l", cChatColor.Bold):gsub("&m", cChatColor.Strikethrough):gsub("&n", cChatColor.Underlined):gsub("&o", cChatColor.Italic):gsub("&r", cChatColor.Plain)
+
+		Player:GetClientHandle():SendSetTitle(cCompositeChat():AddTextPart(Message))
+		Player:GetClientHandle():SendTitleTimes(10, 160, 5)
 	end
 	return true
 end
 
 function HandleUnloadchunksCommand(Split, Player)
 	cRoot:Get():SaveAllChunks()
-	local UnloadChunks = function(World)
-		World:QueueUnloadUnusedChunks()
-	end
-	cRoot:Get():ForEachWorld(UnloadChunks)
+	cRoot:Get():ForEachWorld(
+		function(World)
+			World:QueueUnloadUnusedChunks()
+		end
+	)
 	Player:SendMessageSuccess("Successfully unloaded unused chunks")
 	return true
 end
@@ -606,7 +657,7 @@ function HandleVoteCommand(Split, Player)
 	Player:SendMessageInfo("Feel free to vote for the server to help it grow")
 	Player:SendMessage(cCompositeChat():AddUrlPart(cChatColor.Green.. "[1] " ..cChatColor.LightGreen .. "TopG.org", "https://topg.org/Minecraft/in-414108"))
 	Player:SendMessage(cCompositeChat():AddUrlPart(cChatColor.Green.. "[2] " ..cChatColor.LightGreen .. "MinecraftServers.org", "http://minecraftservers.org/vote/153833"))
-	Player:SendMessage(cCompositeChat():AddUrlPart(cChatColor.Green.. "[3] " ..cChatColor.LightGreen .. "MC Index", "https://www.minecraft-index.com/54824/vote"))
+	Player:SendMessage(cCompositeChat():AddUrlPart(cChatColor.Green.. "[3] " ..cChatColor.LightGreen .. "Minecraft Multiplayer", "http://minecraft-mp.com/server/155223/vote/"))
 	return true 
 end
 
@@ -701,6 +752,15 @@ function HandleTeleCommand(Split, Player)
 	return true
 end
 
+function HandleTpohereCommand(Split, Player)
+	if Split[2] == nil then
+		Player:SendMessageInfo("Usage: " .. Split[1] .. " <player>")
+	else
+		cPluginManager:Get():ExecuteCommand(Player, "/tphere " .. table.concat(Split, " ", 2))
+	end
+	return true
+end
+
 function HandleTpposCommand(Split, Player)
 	if Split[2] == nil or #Split > 4 then
 		Player:SendMessageInfo("Usage: " .. Split[1] .. " <x> <y> <z>")
@@ -731,8 +791,9 @@ function HandleEndCommand(Split, Player)
 	Player:SetYaw(90)
 	if Player:GetWorld():GetName() == "end" then
 		Player:TeleportToCoords(World:GetSpawnX(), World:GetSpawnY(), World:GetSpawnZ())
+	else
+		Player:MoveToWorld("end")
 	end
-	Player:MoveToWorld("end")
 	Player:SendMessageSuccess("Successfully moved to the End")
 	return true
 end
@@ -743,8 +804,9 @@ function HandleFlatlandsCommand(Split, Player)
 	Player:SetYaw(0)
 	if Player:GetWorld():GetName() == "flatlands" then
 		Player:TeleportToCoords(World:GetSpawnX(), World:GetSpawnY(), World:GetSpawnZ() + 14)
+	else
+		Player:MoveToWorld(World, true, Vector3d(World:GetSpawnX(), World:GetSpawnY(), World:GetSpawnZ() + 14))
 	end
-	Player:MoveToWorld(cRoot:Get():GetWorld("flatlands"), true, Vector3d(World:GetSpawnX(), World:GetSpawnY(), World:GetSpawnZ() + 14))
 	Player:SendMessageSuccess("Successfully moved to the Flatlands")
 	return true
 end
@@ -755,8 +817,9 @@ function HandleHubCommand(Split, Player)
 	Player:SetYaw(0)
 	if Player:GetWorld():GetName() == "flatlands" then
 		Player:TeleportToCoords(World:GetSpawnX(), World:GetSpawnY(), World:GetSpawnZ())
+	else
+		Player:MoveToWorld("flatlands")
 	end
-	Player:MoveToWorld("flatlands")
 	Player:SendMessageSuccess("Successfully moved to the Hub")
 	return true
 end
@@ -767,8 +830,9 @@ function HandleNetherCommand(Split, Player)
 	Player:SetYaw(-90)
 	if Player:GetWorld():GetName() == "nether" then
 		Player:TeleportToCoords(World:GetSpawnX(), World:GetSpawnY(), World:GetSpawnZ())
+	else
+		Player:MoveToWorld("nether")
 	end
-	Player:MoveToWorld("nether")
 	Player:SendMessageSuccess("Successfully moved to the Nether")
 	return true
 end
@@ -779,8 +843,9 @@ function HandleOverworldCommand(Split, Player)
 	Player:SetYaw(180)
 	if Player:GetWorld():GetName() == "overworld" then
 		Player:TeleportToCoords(World:GetSpawnX(), World:GetSpawnY(), World:GetSpawnZ())
+	else
+		Player:MoveToWorld("overworld")
 	end
-	Player:MoveToWorld("overworld")
 	Player:SendMessageSuccess("Successfully moved to the Overworld")
 	return true
-end
+end		-- 1.10 and below
