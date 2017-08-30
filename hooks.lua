@@ -161,7 +161,9 @@ end
 
 function OnPlayerMoving(Player, OldPosition, NewPosition)
 	if Player:GetWorld():GetName() == "hub" then
-		if not TitleShown[Player:GetUUID()] then
+		if not TitleEnd:IsInside(NewPosition) and not TitleFlatlands:IsInside(NewPosition) and not TitleNether:IsInside(NewPosition) and not TitleOverworld:IsInside(NewPosition) then
+			TitleShown[Player:GetUUID()] = nil
+		elseif not TitleShown[Player:GetUUID()] then
 			if TitleEnd:IsInside(NewPosition) then
 				ShowTitle(Player, cChatColor.LightGray .. cChatColor.Bold .. "End")
 			elseif TitleFlatlands:IsInside(NewPosition) then
@@ -170,23 +172,20 @@ function OnPlayerMoving(Player, OldPosition, NewPosition)
 				ShowTitle(Player, cChatColor.Rose .. cChatColor.Bold .. "Nether")
 			elseif TitleOverworld:IsInside(NewPosition) then
 				ShowTitle(Player, cChatColor.LightGreen .. cChatColor.Bold .. "Overworld")
-			elseif PortalEnd:IsInside(NewPosition) then
+			end
+		end
+		if not PortalEnd:IsInside(NewPosition) and not PortalFlatlands:IsInside(NewPosition) and not PortalNether:IsInside(NewPosition) and not PortalOverworld:IsInside(NewPosition) then
+			HasTeleported[Player:GetUUID()] = nil
+		elseif not HasTeleported[Player:GetUUID()] then
+			if PortalEnd:IsInside(NewPosition) then
 				MoveToWorld(Player, "end")
-				return true
 			elseif PortalFlatlands:IsInside(NewPosition) then
 				MoveToWorld(Player, "flatlands")
-				return true
 			elseif PortalNether:IsInside(NewPosition) then
 				MoveToWorld(Player, "nether")
-				return true
 			elseif PortalOverworld:IsInside(NewPosition) then
 				MoveToWorld(Player, "overworld")
-				return true
 			end
-		elseif not TitleEnd:IsInside(NewPosition) and not TitleFlatlands:IsInside(NewPosition) and not TitleNether:IsInside(NewPosition) and not TitleOverworld:IsInside(NewPosition) then
-			TitleShown[Player:GetUUID()] = nil
-		elseif not PortalEnd:IsInside(NewPosition) and not PortalFlatlands:IsInside(NewPosition) and not PortalNether:IsInside(NewPosition) and not PortalOverworld:IsInside(NewPosition) then
-			HasTeleported[Player:GetUUID()] = nil
 		end
 	end
 	local LookPos = GetPlayerLookPos(Player)
