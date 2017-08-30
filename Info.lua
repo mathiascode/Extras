@@ -1,8 +1,8 @@
 g_PluginInfo =
 {
 	Name = "Extras",
-	Version = "2",
-	Date = "2017-05-17",
+	Version = "3",
+	Date = "2017-08-30",
 	SourceLocation = "https://github.com/mathiascode/Extras",
 	Description = [[Plugin for Cuberite that adds extra functionality to the Kaboom.pw server.]],
 
@@ -14,13 +14,6 @@ g_PluginInfo =
 			Handler = HandleActionBarBroadcastCommand,
 			Permission = "extras.actionbarbroadcast",
 			HelpString = "Broadcasts an action bar message"
-		},
-		["/broadcast"] =
-		{
-			Alias = { "/say", "/bcast", "/bc", },
-			Handler = HandleBroadcastCommand,
-			Permission = "extras.broadcast",
-			HelpString = "Broadcasts a message to all players",
 		},
 		["/clearchat"] =
 		{
@@ -35,12 +28,6 @@ g_PluginInfo =
 			Permission = "extras.clearinventory",
 			HelpString = "Clears the inventory of a player"
 		},
-		["/commandblock"] =
-		{
-			Handler = HandleCommandBlockCommand,
-			Permission = "extras.commandblock",
-			HelpString = "Allows you to set a command block's command"
-		},
 		["/console"] =
 		{
 			Handler = HandleConsoleCommand,
@@ -52,12 +39,6 @@ g_PluginInfo =
 			Handler = HandleDayCommand,
 			Permission = "extras.day",
 			HelpString = "Sets the time to day"
-		},
-		["/deop"] =
-		{
-			Handler = HandleDeopCommand,
-			Permission = "extras.deop",
-			HelpString = "Removes a player's operator permissions"
 		},
 		["/destroyentities"] =
 		{
@@ -95,36 +76,9 @@ g_PluginInfo =
 			Permission = "extras.foodlevel",
 			HelpString = "Sets the food level to the given value"
 		},
-		["/gma"] =
-		{
-			Alias = "/adventure",
-			Handler = HandleAdventureCommand,
-			Permission = "extras.adventure",
-			HelpString = "Changes a player's gamemode to aventure"
-		},
-		["/gmc"] =
-		{
-			Alias = "/creative",
-			Handler = HandleCreativeCommand,
-			Permission = "extras.creative",
-			HelpString = "Changes a player's gamemode to creative"
-		},
-		["/gms"] =
-		{
-			Alias = "/survival",
-			Handler = HandleSurvivalCommand,
-			Permission = "extras.survival",
-			HelpString = "Changes a player's gamemode to survival"
-		},
-		["/gmsp"] =
-		{
-			Alias = "/spectator",
-			Handler = HandleSpectatorCommand,
-			Permission = "extras.spectator",
-			HelpString = "Changes a player's gamemode to spectator"
-		},
 		["/hub"] =
 		{
+			Alias = "/lobby",
 			Handler = HandleHubCommand,
 			Permission = "extras.hub",
 			HelpString = "Moves your player to the Hub"
@@ -134,6 +88,12 @@ g_PluginInfo =
 			Handler = HandleIenchantmentCommand,
 			Permission = "extras.ienchantment",
 			HelpString = "Adds an enchantment to an item"
+		},
+		["/importschematic"] =
+		{
+			Handler = HandleImportSchematicCommand,
+			Permission = "extras.importschematic",
+			HelpString = "Imports a schematic file to the server"
 		},
 		["/jumpscare"] =
 		{
@@ -196,12 +156,6 @@ g_PluginInfo =
 			Permission = "extras.night",
 			HelpString = "Sets the time to night"
 		},
-		["/op"] =
-		{
-			Handler = HandleOpCommand,
-			Permission = "extras.op",
-			HelpString = "Gives a player operator permissions"
-		},
 		["/overworld"] =
 		{
 			Handler = HandleOverworldCommand,
@@ -251,12 +205,6 @@ g_PluginInfo =
 			Permission = "extras.suicide",
 			HelpString = "Ends your life"
 		},
-		["/summon"] =
-		{
-			Handler = HandleSummonCommand,
-			Permission = "extras.summon",
-			HelpStrings = "Summons an entity at the specified coordinates"
-		},
 		["/tele"] =
 		{
 			Alias = { "/tp2p", "/teleport", "/tpo", },
@@ -274,7 +222,7 @@ g_PluginInfo =
                 {
 			Handler = HandleTitleCommand,
 			Permission = "extras.title",
-			HelpString = "Broadcasts raw text to the server"
+			HelpString = "Broadcasts a title to the server"
 		},
 		["/tpohere"] =
 		{

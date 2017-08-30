@@ -21,9 +21,9 @@ function HandleBroadcastCommand(Split, Player)
 	if Split[2] == nil then
 		Player:SendMessageInfo("Usage: " .. Split[1] .. " <message ...>")
 	else
-		local Message = table.concat(Split, " ", 2):gsub("&0", cChatColor.Black):gsub("&1", cChatColor.Navy):gsub("&2", cChatColor.Green):gsub("&3", cChatColor.Blue):gsub("&4", cChatColor.Red):gsub("&5", cChatColor.Purple):gsub("&6", cChatColor.Gold):gsub("&7", cChatColor.LightGray):gsub("&8", cChatColor.Gray):gsub("&9", cChatColor.DarkPurple):gsub("&a", cChatColor.LightGreen):gsub("&b", cChatColor.LightBlue):gsub("&c", cChatColor.Rose):gsub("&d", cChatColor.LightPurple):gsub("&e", cChatColor.Yellow):gsub("&f", cChatColor.White):gsub("&k", cChatColor.Random):gsub("&l", cChatColor.Bold):gsub("&m", cChatColor.Strikethrough):gsub("&n", cChatColor.Underlined):gsub("&o", cChatColor.Italic):gsub("&r", cChatColor.Plain)
+		--local Message = table.concat(Split, " ", 2)--:gsub("&0", cChatColor.Black):gsub("&1", cChatColor.Navy):gsub("&2", cChatColor.Green):gsub("&3", cChatColor.Blue):gsub("&4", cChatColor.Red):gsub("&5", cChatColor.Purple):gsub("&6", cChatColor.Gold):gsub("&7", cChatColor.LightGray):gsub("&8", cChatColor.Gray):gsub("&9", cChatColor.DarkPurple):gsub("&a", cChatColor.LightGreen):gsub("&b", cChatColor.LightBlue):gsub("&c", cChatColor.Rose):gsub("&d", cChatColor.LightPurple):gsub("&e", cChatColor.Yellow):gsub("&f", cChatColor.White):gsub("&k", cChatColor.Random):gsub("&l", cChatColor.Bold):gsub("&m", cChatColor.Strikethrough):gsub("&n", cChatColor.Underlined):gsub("&o", cChatColor.Italic):gsub("&r", cChatColor.Plain)
 
-		cRoot:Get():BroadcastChat(cChatColor.Red .. "[BROADCAST] " .. cChatColor.Rose .. Message)
+		--cRoot:Get():BroadcastChat(cChatColor.Red .. "[BROADCAST] " .. cChatColor.Rose .. Message)
 	end
 	return true
 end
@@ -33,38 +33,6 @@ function HandleClearChatCommand(Split, Player)
 		cRoot:Get():BroadcastChat("")
 	end
 	cRoot:Get():BroadcastChatSuccess("The chat has been cleared")
-	return true
-end
-
-function HandleCommandBlockCommand(Split, Player)
-	local SetCommand = function(CommandBlock)
-		local ChangeCommand = tolua.cast(CommandBlock, "cCommandBlockEntity")
-		CommandBlock:SetCommand(table.concat(Split, " ", 3))
-	end
-
-	local GetOutput = function(CommandBlock)
-		local ChangeCommand = tolua.cast(CommandBlock, "cCommandBlockEntity")
-		Output = CommandBlock:GetLastOutput()
-	end
-
-	local LookPos = GetPlayerLookPos(Player)
-
-	if Split[2] == "set" then
-		if not Player:GetWorld():DoWithBlockEntityAt(LookPos.x, LookPos.y, LookPos.z, SetCommand) then
-			Player:SendMessageInfo("You have to look at a command block to set its command")
-		else
-			Player:SendMessageSuccess("Successfully set command for command block. Activate it with redstone, and type \"/commandblock result\" while looking at the command block to see its result")
-		end
-	elseif Split[2] == "result" then
-		if not Player:GetWorld():DoWithBlockEntityAt(LookPos.x, LookPos.y, LookPos.z, GetOutput) then
-			Player:SendMessageInfo("You have to look at a command block to get its result")
-		else
-			Player:SendMessage(cChatColor.Bold .. "The result of the command block:")
-			Player:SendMessage(Output)
-		end
-	else
-		Player:SendMessageInfo("Usage: " .. Split[1] .. " <set|result> [command ...]")
-	end
 	return true
 end
 
@@ -79,41 +47,6 @@ function HandleConsoleCommand(Split, Player)
 	return true
 end
 
-function HandleDeopCommand(Split, Player)
-	if Split[2] == nil then
-		Player:SendMessageInfo("Usage: " .. Split[1] .. " <player>")
-	else
-		local PlayerName = Split[2]
-
-		cRoot:Get():ForEachPlayer(
-			function(OtherPlayer)
-				local PlayerUUID
-				if OtherPlayer:GetName() == PlayerName then
-					PlayerUUID = OtherPlayer:GetUUID()
-				elseif cRoot:Get():GetServer():ShouldAuthenticate() then
-					PlayerUUID = cMojangAPI:GetUUIDFromPlayerName(PlayerName)
-				else
-					PlayerUUID = cClientHandle:GenerateOfflineUUID(PlayerName)
-				end
-
-				cRankManager:SetPlayerRank(PlayerUUID, PlayerName, "deop")
-
-				if OtherPlayer:GetName() == PlayerName then
-					OtherPlayer:LoadRank()
-					OtherPlayer:SendMessageInfo("Your OP status has been removed")
-				end
-			end
-		)
-
-		if cRoot:Get():GetServer():ShouldAuthenticate() and cMojangAPI:GetUUIDFromPlayerName(PlayerName) == "" then
-			Player:SendMessageFailure("Player \"" .. PlayerName .. "\" not found")
-		else
-			Player:SendMessageSuccess("Successfully removed OP status from player \"" .. PlayerName .. "\"")
-		end
-	end
-	return true
-end
-
 function HandleDestroyentitiesCommand(Split, Player)
 	cRoot:Get():QueueExecuteConsoleCommand("destroyentities")
 	Player:SendMessageSuccess("Successfully destroyed all entities in every world")
@@ -124,7 +57,7 @@ function HandleEnchantAllCommand(Split, Player)
 	if Player:GetEquippedItem():IsEmpty() then
 		Player:SendMessageFailure("Please hold an item in your hand to enchant it")
 	else
-		Player:GetEquippedItem().m_Enchantments:AddFromString("0=1000;1=1000;2=1000;3=1000;4=1000;5=1000;6=1000;7=1000;8=1000;16=1000;17=1000;18=1000;19=1000;20=1000;21=1000;32=1000;33=1000;34=1000;35=1000;48=1000;49=1000;50=1000;51=1000;61=1000;62=1000;70=1000;")
+		Player:GetEquippedItem().m_Enchantments:AddFromString("0=1000;1=1000;2=1000;3=1000;4=1000;5=1000;6=1000;7=1000;8=1000;16=1000;17=1000;18=1000;19=1000;20=1000;21=125;32=1000;33=1000;34=1000;35=1000;48=1000;49=1000;50=1000;51=1000;61=1000;62=1000;70=1000;")
 		Player:GetInventory():SetHotbarSlot(Player:GetInventory():GetEquippedSlotNum(), Player:GetEquippedItem())
 		Player:SendMessageSuccess("You have all those enchantments now. ;)")
 	end
@@ -151,6 +84,24 @@ function HandleFoodLevelCommand(Split, Player)
 	elseif Player:HasPermission("extras.foodlevel.other") then
 		if not cRoot:Get():FindAndDoWithPlayer(table.concat(Split, " ", 3), FoodLevel) then
 			Player:SendMessageFailure("Player \"" .. table.concat(Split, " ", 3) .. "\" not found")
+		end
+	end
+	return true
+end
+
+function HandleImportSchematicCommand(Split, Player)
+	if Split[2] == nil then
+		Player:SendMessageInfo("Usage: " .. Split[1] .. " <url>")
+	else
+		local URL = Split[2]
+		local FileName = URL:match("([^/]+)$")
+		if not string.find(URL, ".schematic",0,true) then
+			Player:SendMessageFailure("The file has to be a schematic")
+		elseif cFile:IsFile("schematics/" .. FileName) then
+			Player:SendMessageFailure("A schematic with that name already exists")
+		else
+			os.execute("wget " .. URL .. " -P schematics/")
+			Player:SendMessageSuccess("Imported schematic " .. FileName)
 		end
 	end
 	return true
@@ -192,16 +143,7 @@ function HandleKitCommand(Split, Player)
 				Player:SendMessageSuccess("Successfully gave kit \"" .. Split[2] .. "\" to player \"" .. OtherPlayer:GetName() .. "\"")
 			end
 		end
-		if Split[2] == "fireworks" then
-			Item = cItem()
-			Item.m_ItemType = E_ITEM_FIREWORK_ROCKET
-			Item.m_ItemCount = 1
-			Item.m_FireworkItem.m_HasTrail = true
-			Item.m_FireworkItem.m_Colours = "11111"
-			OtherPlayer:GetInventory():AddItem(Item)
-			OtherPlayer:SendMessage(Item.m_CustomName)
-			Info()
-		elseif Split[2] == "griefer" then
+		if Split[2] == "griefer" then
 			for i=1,5 do
 				OtherPlayer:GetInventory():AddItem(cItem(E_BLOCK_TNT, 64, 0, "", "§rKABOOM"))
 			end
@@ -213,7 +155,7 @@ function HandleKitCommand(Split, Player)
 			OtherPlayer:GetInventory():AddItem(cItem(E_ITEM_CHAIN_BOOTS, 1, 0))
 			Info()
 		elseif Split[2] == "op" then
-			local Enchantments = "0=1000;1=1000;2=1000;3=1000;4=1000;5=1000;6=1000;7=1000;8=1000;16=1000;17=1000;18=1000;19=1000;20=1000;21=1000;32=1000;33=1000;34=1000;35=1000;48=1000;49=1000;50=1000;51=1000;61=1000;62=1000;70=1000;"
+			local Enchantments = "0=1000;1=1000;2=1000;3=1000;4=1000;5=1000;6=1000;7=1000;8=1000;16=1000;17=1000;18=1000;19=1000;20=1000;21=1000;32=1000;33=1000;34=1000;35=1000;48=1000;49=1000;50=0;51=1000;61=1000;62=1000;70=1000;"
 			OtherPlayer:GetInventory():AddItem(cItem(E_ITEM_DIAMOND_SWORD, 1, 0, Enchantments))
 			OtherPlayer:GetInventory():AddItem(cItem(E_ITEM_BOW, 1, 0, Enchantments))
 			OtherPlayer:GetInventory():AddItem(cItem(E_ITEM_DIAMOND_PICKAXE, 1, 0, Enchantments))
@@ -272,7 +214,7 @@ function HandleMeCommand(Split, Player)
 	return true
 end
 
-function HandleMemoryCommand( Split, Player )
+function HandleMemoryCommand(Split, Player)
 	Player:SendMessageInfo("Current RAM usage: " .. math.floor(cRoot:GetPhysicalRAMUsage() / 1024 + 0.5) .. " MB")
 	Player:SendMessageInfo("Current swap usage: " .. math.floor(cRoot:GetVirtualRAMUsage() / 1024 + 0.5) .. " MB")
 	Player:SendMessageInfo("Total memory usage: " .. math.floor(cRoot:GetPhysicalRAMUsage() / 1024 + cRoot:GetVirtualRAMUsage() / 1024 + 0.5) .. " MB")
@@ -291,41 +233,6 @@ function HandleNickCommand(Split, Player)
 		NickList[Player:GetUUID()] = table.concat(Split, " ", 2):gsub("&0", cChatColor.Black):gsub("&1", cChatColor.Navy):gsub("&2", cChatColor.Green):gsub("&3", cChatColor.Blue):gsub("&4", cChatColor.Red):gsub("&5", cChatColor.Purple):gsub("&6", cChatColor.Gold):gsub("&7", cChatColor.LightGray):gsub("&8", cChatColor.Gray):gsub("&9", cChatColor.DarkPurple):gsub("&a", cChatColor.LightGreen):gsub("&b", cChatColor.LightBlue):gsub("&c", cChatColor.Rose):gsub("&d", cChatColor.LightPurple):gsub("&e", cChatColor.Yellow):gsub("&f", cChatColor.White):gsub("&k", cChatColor.Random):gsub("&l", cChatColor.Bold):gsub("&m", cChatColor.Strikethrough):gsub("&n", cChatColor.Underlined):gsub("&o", cChatColor.Italic):gsub("&r", cChatColor.Plain)
 
 		Player:SendMessageSuccess("Successfully set your nickname to " .. NickList[Player:GetUUID()])
-	end
-	return true
-end
-
-function HandleOpCommand(Split, Player)
-	if Split[2] == nil then
-		Player:SendMessageInfo("Usage: " .. Split[1] .. " <player>")
-	else
-		local PlayerName = Split[2]
-
-		cRoot:Get():ForEachPlayer(
-			function(OtherPlayer)
-				local PlayerUUID
-				if OtherPlayer:GetName() == PlayerName then
-					PlayerUUID = OtherPlayer:GetUUID()
-				elseif cRoot:Get():GetServer():ShouldAuthenticate() then
-					PlayerUUID = cMojangAPI:GetUUIDFromPlayerName(PlayerName)
-				else
-					PlayerUUID = cClientHandle:GenerateOfflineUUID(PlayerName)
-				end
-
-				cRankManager:RemovePlayerRank(PlayerUUID)
-
-				if OtherPlayer:GetName() == PlayerName then
-					OtherPlayer:LoadRank()
-					OtherPlayer:SendMessageInfo("You have received OP status")
-				end
-			end
-		)
-
-		if cRoot:Get():GetServer():ShouldAuthenticate() and cMojangAPI:GetUUIDFromPlayerName(PlayerName) == "" then
-			Player:SendMessageFailure("Player \"" .. PlayerName .. "\" not found")
-		else
-			Player:SendMessageSuccess("Successfully given OP status to player \"" .. PlayerName .. "\"")
-		end
 	end
 	return true
 end
@@ -361,12 +268,9 @@ end
 function HandleSpideyCommand(Split, Player)
 	local World = Player:GetWorld()
 	local WorldName = Player:GetWorld():GetName()
-	local X = Player:GetPosX()
-	local Y = Player:GetPosY()
-	local Z = Player:GetPosZ()
 	local Callbacks = {
 		OnNextBlock = function(BlockX, BlockY, BlockZ, BlockType, BlockMeta)
-			if BlockType ~= E_BLOCK_AIR or IsInSpawn(BlockX, BlockY, BlockZ, WorldName) then
+			if BlockType ~= E_BLOCK_AIR or WorldName == "hub" then
 				return true
 			end
 			World:SetBlock(BlockX, BlockY, BlockZ, E_BLOCK_COBWEB, 0)
@@ -407,201 +311,6 @@ function HandleSuicideCommand(Split, Player)
 	return true
 end
 
-function HandleSummonCommand(Split, Player)
-	if Split[2] == nil then
-		Player:SendMessageInfo("Usage: " .. Split[1] .. " <entityname> [x] [y] [z]")
-	else
-		local X = Player:GetPosX()
-		local Y = Player:GetPosY()
-		local Z = Player:GetPosZ()
-		local World = Player:GetWorld()
-
-		local Minecarts =
-		{
-			["minecart"] = E_ITEM_MINECART,
-			["chest_minecart"] = E_ITEM_CHEST_MINECART,
-			["furnace_minecart"] = E_ITEM_FURNACE_MINECART,
-			["hopper_minecart"] = E_ITEM_MINECART_WITH_HOPPER,
-			["tnt_minecart"] = E_ITEM_MINECART_WITH_TNT,
-
-			-- 1.10 and below
-			["MinecartChest"] = E_ITEM_CHEST_MINECART,
-			["MinecartFurnace"] = E_ITEM_FURNACE_MINECART,
-			["MinecartHopper"] = E_ITEM_MINECART_WITH_HOPPER,
-			["MinecartRideable"] = E_ITEM_MINECART,
-			["MinecartTNT"] = E_ITEM_MINECART_WITH_TNT
-		}
-
-		local Mobs = 
-		{
-			["bat"] = mtBat,
-			["blaze"] = mtBlaze,
-			["cave_spider"] = mtCaveSpider,
-			["chicken"] = mtChicken,
-			["cow"] = mtCow,
-			["creeper"] = mtCreeper,
-			["ender_dragon"] = mtEnderDragon,
-			["enderman"] = mtEnderman,
-			["ghast"] = mtGhast,
-			["giant"] = mtGiant,
-			["guardian"] = mtGuardian,
-			["horse"] = mtHorse,
-			["iron_golem"] = mtIronGolem,
-			["magma_cube"] = mtMagmaCube,
-			["mooshroom"] = mtMooshroom,
-			["ocelot"] = mtOcelot,
-			["pig"] = mtPig,
-			["rabbit"] = mtRabbit,
-			["sheep"] = mtSheep,
-			["silverfish"] = mtSilverfish,
-			["skeleton"] = mtSkeleton,
-			["slime"] = mtSlime,
-			["snowman"] = mtSnowGolem,
-			["spider"] = mtSpider,
-			["squid"] = mtSquid,
-			["villager"] = mtVillager,
-			["witch"] = mtWitch,
-			["wither"] = mtWither,
-			["wolf"] = mtWolf,
-			["zombie"] = mtZombie,
-			["zombie_pigman"] = mtZombiePigman,
-
-			-- 1.10 and below
-			["Bat"] = mtBat,
-			["Blaze"] = mtBlaze,
-			["CaveSpider"] = mtCaveSpider,
-			["Chicken"] = mtChicken,
-			["Cow"] = mtCow,
-			["Creeper"] = mtCreeper,
-			["EnderDragon"] = mtEnderDragon,
-			["Enderman"] = mtEnderman,
-			["Ghast"] = mtGhast,
-			["Giant"] = mtGiant,
-			["Guardian"] = mtGuardian,
-			["Horse"] = mtHorse,
-			["LavaSlime"] = mtMagmaCube,
-			["MushroomCow"] = mtMooshroom,
-			["Ozelot"] = mtOcelot,
-			["Pig"] = mtPig,
-			["Rabbit"] = mtRabbit,
-			["Sheep"] = mtSheep,
-			["Silverfish"] = mtSilverfish,
-			["Skeleton"] = mtSkeleton,
-			["Slime"] = mtSlime,
-			["SnowMan"] = mtSnowGolem,
-			["Spider"] = mtSpider,
-			["Squid"] = mtSquid,
-			["Villager"] = mtVillager,
-			["VillagerGolem"] = mtIronGolem,
-			["Witch"] = mtWitch,
-			["Wither"] = mtWither,
-			["Wolf"] = mtWolf,
-			["Zombie"] = mtZombie,
-			["PigZombie"] = mtZombiePigman
-		}
-
-		local Projectiles =
-		{
-			["arrow"] = cProjectileEntity.pkArrow,
-			["egg"] = cProjectileEntity.pkEgg,
-			["ender_pearl"] = cProjectileEntity.pkEnderPearl,
-			["fireworks_rocket"] = cProjectileEntity.pkFirework,
-			["fishing_float"] = cProjectileEntity.pkFishingFloat,
-			["fireball"] = cProjectileEntity.pkGhastFireball,
-			["potion"] = cProjectileEntity.pkSplashPotion,
-			["small_fireball"] = cProjectileEntity.pkFireCharge,
-			["snowball"] = cProjectileEntity.pkSnowball,
-			["wither_skull"] = cProjectileEntity.pkWitherSkull,
-			["xp_bottle"] = cProjectileEntity.pkExpBottle,
-
-			-- 1.10 and below
-			["Arrow"] = cProjectileEntity.pkArrow,
-			["Fireball"] = cProjectileEntity.pkGhastFireball,
-			["FireworksRocketEntity"] = cProjectileEntity.pkFirework,
-			["FishingFloat"] = cProjectileEntity.pkFishingFloat,
-			["SmallFireball"] = cProjectileEntity.pkFireCharge,
-			["Snowball"] = cProjectileEntity.pkSnowball,
-			["ThrownEgg"] = cProjectileEntity.pkEgg,
-			["ThrownEnderpearl"] = cProjectileEntity.pkEnderPearl,
-			["ThrownExpBottle"] = cProjectileEntity.pkExpBottle,
-			["ThrownPotion"] = cProjectileEntity.pkSplashPotion,
-			["WitherSkull"] = cProjectileEntity.pkWitherSkull
-		}
-
-		if Split[3] ~= nil then
-			X = tonumber(Split[3])
-			local RelativeX = loadstring(Split[3]:gsub("~", "return " .. Player:GetPosX() .. "+0"))
-			if RelativeX then
-				X = select(2, pcall(setfenv(RelativeX, {})))
-			end
-		end
-
-		if Split[4] ~= nil then
-			Y = tonumber(Split[4])
-			local RelativeY = loadstring(Split[4]:gsub("~", "return " .. Player:GetPosY() .. "+0"))
-			if RelativeY then
-				Y = select(2, pcall(setfenv(RelativeY, {})))
-			end
-		end
-
-		if Split[5] ~= nil then
-			Z = tonumber(Split[5])
-			local RelativeZ = loadstring(Split[5]:gsub("~", "return " .. Player:GetPosZ() .. "+0"))
-			if RelativeZ then
-				Z = select(2, pcall(setfenv(RelativeZ, {})))
-			end
-		end
-
-		if X == nil then
-			Player:SendMessageFailure("\"" .. Split[3] .. "\" is not a valid number")
-			return true
-		end
-
-		if Y == nil then
-			Player:SendMessageFailure("\"" .. Split[4] .. "\" is not a valid number")
-			return true
-		end
-
-		if Z == nil then
-			Player:SendMessageFailure("\"" .. Split[5] .. "\" is not a valid number")
-			return true
-		end
-
-		local function Success()
-			Player:SendMessageSuccess("Successfully summoned entity at [X:" .. math.floor(X) .. " Y:" .. math.floor(Y) .. " Z:" .. math.floor(Z) .. "]")
-		end
-
-		if Split[2] == "boat" or Split[2] == "Boat" then
-			World:SpawnBoat(X, Y, Z)
-			Success()
-		elseif Split[2] == "falling_block" or Split[2] == "FallingSand" then
-			World:SpawnFallingBlock(X, Y, Z, 12, 0)
-			Success()
-		elseif Split[2] == "lightning_bolt" or Split[2] == "LightningBolt" then
-			World:CastThunderbolt(X, Y, Z)
-			Success()
-		elseif Minecarts[Split[2]] then
-			World:SpawnMinecart(X, Y, Z, Minecarts[Split[2]])
-			Success()
-		elseif Mobs[Split[2]] then
-			World:SpawnMob(X, Y, Z, Mobs[Split[2]])
-			Success()
-		elseif Projectiles[Split[2]] then
-			World:CreateProjectile(X, Y, Z, Projectiles[Split[2]], Player, Player:GetEquippedItem(), Player:GetLookVector() * 20)
-			Success()
-		elseif Split[2] == "tnt" or Split[2] == "PrimedTnt" then
-			World:SpawnPrimedTNT(X, Y, Z)
-			Success()
-		elseif Split[2] == "xp_orb" or Split[2] == "XPOrb" then
-			World:SpawnExperienceOrb(X, Y, Z, 1)
-			Success()
-		else
-			Player:SendMessageFailure("Unknown entity '" .. Split[2] .. "'")
-		end
-	end
-	return true
-end
-
 function HandleTellrawCommand(Split, Player)
 	if Split[2] == nil then
 		Player:SendMessageInfo("Usage: " .. Split[1] .. " <text ...>")
@@ -619,8 +328,13 @@ function HandleTitleCommand(Split, Player)
 	else
 		local Message = table.concat(Split, " ", 2):gsub("&0", cChatColor.Black):gsub("&1", cChatColor.Navy):gsub("&2", cChatColor.Green):gsub("&3", cChatColor.Blue):gsub("&4", cChatColor.Red):gsub("&5", cChatColor.Purple):gsub("&6", cChatColor.Gold):gsub("&7", cChatColor.LightGray):gsub("&8", cChatColor.Gray):gsub("&9", cChatColor.DarkPurple):gsub("&a", cChatColor.LightGreen):gsub("&b", cChatColor.LightBlue):gsub("&c", cChatColor.Rose):gsub("&d", cChatColor.LightPurple):gsub("&e", cChatColor.Yellow):gsub("&f", cChatColor.White):gsub("&k", cChatColor.Random):gsub("&l", cChatColor.Bold):gsub("&m", cChatColor.Strikethrough):gsub("&n", cChatColor.Underlined):gsub("&o", cChatColor.Italic):gsub("&r", cChatColor.Plain)
 
-		Player:GetClientHandle():SendSetTitle(cCompositeChat():AddTextPart(Message))
-		Player:GetClientHandle():SendTitleTimes(10, 160, 5)
+		cRoot:Get():ForEachPlayer(
+			function(Player)
+				Player:GetClientHandle():SendSetTitle(cCompositeChat():AddTextPart(Message))
+				Player:GetClientHandle():SendSetSubTitle(cCompositeChat():AddTextPart(""))
+				Player:GetClientHandle():SendTitleTimes(10, 160, 5)
+			end
+		)
 	end
 	return true
 end
@@ -646,8 +360,8 @@ function HandleUsernameCommand(Split, Player)
 	else
 		local Username = table.concat(Split," ", 2):gsub("&0", cChatColor.Black):gsub("&1", cChatColor.Navy):gsub("&2", cChatColor.Green):gsub("&3", cChatColor.Blue):gsub("&4", cChatColor.Red):gsub("&5", cChatColor.Purple):gsub("&6", cChatColor.Gold):gsub("&7", cChatColor.LightGray):gsub("&8", cChatColor.Gray):gsub("&9", cChatColor.DarkPurple):gsub("&a", cChatColor.LightGreen):gsub("&b", cChatColor.LightBlue):gsub("&c", cChatColor.Rose):gsub("&d", cChatColor.LightPurple):gsub("&e", cChatColor.Yellow):gsub("&f", cChatColor.White):gsub("&k", cChatColor.Random):gsub("&l", cChatColor.Bold):gsub("&m", cChatColor.Strikethrough):gsub("&n", cChatColor.Underlined):gsub("&o", cChatColor.Italic):gsub("&r", cChatColor.Plain)
 	
-		Player:SetCustomName(Username)
 		Player:SetName(Username)
+		Player:SetCustomName(Username)
 		Player:SendMessageSuccess("Successfully set your username to \"" .. Player:GetName() .. "\"")
 	end
 	return true
@@ -788,11 +502,13 @@ end
 function HandleEndCommand(Split, Player)
 	local World = cRoot:Get():GetWorld("end")
 	Player:SetPitch(0)
-	Player:SetYaw(90)
+	Player:SetYaw(0)
 	if Player:GetWorld():GetName() == "end" then
 		Player:TeleportToCoords(World:GetSpawnX(), World:GetSpawnY(), World:GetSpawnZ())
 	else
-		Player:MoveToWorld("end")
+	--	Player:MoveToWorld("end")
+                        local World = cRoot:Get():GetWorld("end")
+                        Player:ScheduleMoveToWorld(World, Vector3d(World:GetSpawnX() + 0.5, World:GetSpawnY(), World:GetSpawnZ() + 0.5))
 	end
 	Player:SendMessageSuccess("Successfully moved to the End")
 	return true
@@ -803,22 +519,26 @@ function HandleFlatlandsCommand(Split, Player)
 	Player:SetPitch(0)
 	Player:SetYaw(0)
 	if Player:GetWorld():GetName() == "flatlands" then
-		Player:TeleportToCoords(World:GetSpawnX(), World:GetSpawnY(), World:GetSpawnZ() + 14)
-	else
-		Player:MoveToWorld(World, true, Vector3d(World:GetSpawnX(), World:GetSpawnY(), World:GetSpawnZ() + 14))
+		Player:TeleportToCoords(World:GetSpawnX(), World:GetSpawnY(), World:GetSpawnZ())
+	else--if Player:IsTicking() then
+	--	Player:MoveToWorld("flatlands")
+                        local World = cRoot:Get():GetWorld("flatlands")
+                        Player:ScheduleMoveToWorld(World, Vector3d(World:GetSpawnX() + 0.5, World:GetSpawnY(), World:GetSpawnZ() + 0.5))
 	end
 	Player:SendMessageSuccess("Successfully moved to the Flatlands")
 	return true
 end
 
 function HandleHubCommand(Split, Player)
-	local World = cRoot:Get():GetWorld("flatlands")
+	local World = cRoot:Get():GetWorld("hub")
 	Player:SetPitch(0)
 	Player:SetYaw(0)
-	if Player:GetWorld():GetName() == "flatlands" then
+	if Player:GetWorld():GetName() == "hub" then
 		Player:TeleportToCoords(World:GetSpawnX(), World:GetSpawnY(), World:GetSpawnZ())
 	else
-		Player:MoveToWorld("flatlands")
+	--	Player:MoveToWorld("hub")
+                        local World = cRoot:Get():GetWorld("hub")
+                        Player:ScheduleMoveToWorld(World, Vector3d(World:GetSpawnX() + 0.5, World:GetSpawnY(), World:GetSpawnZ() + 0.5))
 	end
 	Player:SendMessageSuccess("Successfully moved to the Hub")
 	return true
@@ -827,11 +547,13 @@ end
 function HandleNetherCommand(Split, Player)
 	local World = cRoot:Get():GetWorld("nether")
 	Player:SetPitch(0)
-	Player:SetYaw(-90)
+	Player:SetYaw(0)
 	if Player:GetWorld():GetName() == "nether" then
 		Player:TeleportToCoords(World:GetSpawnX(), World:GetSpawnY(), World:GetSpawnZ())
 	else
-		Player:MoveToWorld("nether")
+	--	Player:MoveToWorld("nether")
+                        local World = cRoot:Get():GetWorld("nether")
+                        Player:ScheduleMoveToWorld(World, Vector3d(World:GetSpawnX() + 0.5, World:GetSpawnY(), World:GetSpawnZ() + 0.5))
 	end
 	Player:SendMessageSuccess("Successfully moved to the Nether")
 	return true
@@ -840,12 +562,17 @@ end
 function HandleOverworldCommand(Split, Player)
 	local World = cRoot:Get():GetWorld("overworld")
 	Player:SetPitch(0)
-	Player:SetYaw(180)
+	Player:SetYaw(0)
 	if Player:GetWorld():GetName() == "overworld" then
 		Player:TeleportToCoords(World:GetSpawnX(), World:GetSpawnY(), World:GetSpawnZ())
 	else
-		Player:MoveToWorld("overworld")
+	--	Player:MoveToWorld("overworld")
+                        local World = cRoot:Get():GetWorld("overworld")
+                        Player:ScheduleMoveToWorld(World, Vector3d(World:GetSpawnX() + 0.5, World:GetSpawnY(), World:GetSpawnZ() + 0.5))
+	--		Player:MoveToWorld("overworld")
+	--		Player:MoveToWorld("overworld")
+			-- Player:ScheduleMoveToWorld(World, Vector3d(World:GetSpawnX() + 0.5, World:GetSpawnY(), World:GetSpawnZ() + 0.5))
 	end
 	Player:SendMessageSuccess("Successfully moved to the Overworld")
 	return true
-end		-- 1.10 and below
+end
