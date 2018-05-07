@@ -1,24 +1,16 @@
--- Quick settings
-local JoinTitle = cChatColor.LightGray .. "Welcome to Kaboom.pw!"
-local JoinSubtitle = "Free OP • Anarchy • Creative"
-
 function OnChat(Player, Message)
 	if CommandBlockActive[Player:GetUUID()] then
-		if Message == "c" then
-			CommandBlockActive[Player:GetUUID()] = nil
-		else
-			if not CommandBlockActive[Player:GetUUID()].World:DoWithCommandBlockAt(CommandBlockActive[Player:GetUUID()].X, CommandBlockActive[Player:GetUUID()].Y, CommandBlockActive[Player:GetUUID()].Z,
-				function(CommandBlock)
-					CommandBlock:SetCommand(Message)
-				end
-			) then
-				Player:SendMessageFailure("The selected command block doesn't exist anymore")
-			else
-				Player:SendMessageInfo("The command block command was set to \"" .. Message .. "\"")
-			end
-			CommandBlockActive[Player:GetUUID()] = nil
-		end
+		SetCommandBlockCommand(Player, Message)
 		return true
+	end
+
+	if ChatAntiSpam == true then
+		if CanMessage[Player:GetUUID()] == 0 then
+			--Player:SendMessageFailure("Please avoid spamming")
+			return true
+		else
+			CanMessage[Player:GetUUID()] = 0
+		end
 	end
 
 	if NickList[Player:GetUUID()] == nil then
@@ -106,18 +98,39 @@ function OnEntityChangingWorld(Entity, World)
 	end
 end
 
+function OnEntityTeleport(Entity, OldPosition, NewPosition)
+	if NewPosition.x > 30000000 then
+		Entity:TeleportToCoords(30000000, NewPosition.y, NewPosition.z)
+		return true
+	elseif NewPosition.z > 30000000 then
+		Entity:TeleportToCoords(NewPosition.x, NewPosition.y, 30000000)
+		return true
+	end
+end
+
 function OnExecuteCommand(Player, CommandSplit, EntireCommand)
 	if Player then
 		-- Checks if the player is spamming the specified commands
-		if CanMessage[Player:GetUUID()] == false and CooldownCommands[CommandSplit[1]] then
-			Player:SendMessageFailure("Please avoid spamming")
+		if CommandAntiSpam == true then
+			if CanMessage[Player:GetUUID()] == false and CooldownCommands[CommandSplit[1]] then
+				--Player:SendMessageFailure("Please avoid spamming")
+				return true, cPluginManager.crExecuted
+			else
+				CanMessage[Player:GetUUID()] = false
+			end
+		end
+
+		if CommandBlockActive[Player:GetUUID()] then
+			SetCommandBlockCommand(Player, EntireCommand)
 			return true, cPluginManager.crExecuted
-		else
-			CanMessage[Player:GetUUID()] = false
 		end
-		if CommandSplit[1] == "/regen" then
-			return true, cPluginManager.crUnknownCommand
+
+		if DisableHarmfulCommands == true then
+			if CommandSplit[1] == "/ban" or CommandSplit[1] == "/kick" or CommandSplit[1] == "/nuke" or CommandSplit[1] == "/regen" or CommandSplit[1] == "/unsafegive" or CommandSplit[1] == "/unsafeitem" then
+				return true, cPluginManager.crUnknownCommand
+			end
 		end
+
 		if CommandSplit[1] == "/bc" or CommandSplit[1] == "/bcast" or CommandSplit[1] == "/broadcast" then
 			if CommandSplit[2] then
 				local Message = table.concat(CommandSplit, " ", 2):gsub("&0", cChatColor.Black):gsub("&1", cChatColor.Navy):gsub("&2", cChatColor.Green):gsub("&3", cChatColor.Blue):gsub("&4", cChatColor.Red):gsub("&5", cChatColor.Purple):gsub("&6", cChatColor.Gold):gsub("&7", cChatColor.LightGray):gsub("&8", cChatColor.Gray):gsub("&9", cChatColor.DarkPurple):gsub("&a", cChatColor.LightGreen):gsub("&b", cChatColor.LightBlue):gsub("&c", cChatColor.Rose):gsub("&d", cChatColor.LightPurple):gsub("&e", cChatColor.Yellow):gsub("&f", cChatColor.White):gsub("&k", cChatColor.Random):gsub("&l", cChatColor.Bold):gsub("&m", cChatColor.Strikethrough):gsub("&n", cChatColor.Underlined):gsub("&o", cChatColor.Italic):gsub("&r", cChatColor.Plain)
@@ -126,37 +139,55 @@ function OnExecuteCommand(Player, CommandSplit, EntireCommand)
 				return true, cPluginManager.crExecuted
 			end
 		end
+
+		if CommandSplit[1] == "/me" then
+			HandleActionCommand(CommandSplit, Player)
+			return true, cPluginManager.crExecuted
+		end
+
+		if CommandSplit[1] == "//expand" or
+		CommandSplit[1] == "//green" or
+		CommandSplit[1] == "//snow" or
+		CommandSplit[1] == "//stack" or
+		CommandSplit[1] == "//thaw" or
+		CommandSplit[1] == "/green" or
+		CommandSplit[1] == "/pumpkins" or
+		CommandSplit[1] == "/thaw" or
+		CommandSplit[1] == "/snow" then
+			if tonumber(CommandSplit[2]) and tonumber(CommandSplit[2]) > 25 then
+				Player:SendMessageFailure("Please reduce the radius to 25 or below")
+				return true, cPluginManager.crExecuted
+			end
+		end
+	else
+		if DisableHarmfulCommands == true then
+			if CommandSplit[1] == "ban" or CommandSplit[1] == "kick" or CommandSplit[1] == "players" or CommandSplit[1] == "say" then
+				return true, cPluginManager.crUnknownCommand
+			end
+		end
 	end
 end
 
 function OnExploding(World, ExplosionSize, CanCauseFire, X, Y, Z, Source, SourceData)
 	ExplosionCount = ExplosionCount + 1
-	if World:GetName() == "hub" or ExplosionCount > 50 then
-		return true
-	end
-end
-
-function OnPlayerBreakingBlock(Player, BlockX, BlockY, BlockZ, BlockFace, BlockType, BlockMeta)
-	if Player:GetWorld():GetName() == "hub" then
-		return true
-	end
-end
-
-function OnPlayerPlacingBlock(Player, BlockX, BlockY, BlockZ, BlockType, BlockMeta)
-	if Player:GetWorld():GetName() == "hub" then
+	if ExplosionCount > 50 or World:GetName() == "hub" then
 		return true
 	end
 end
 
 function OnPlayerJoined(Player)
-	local Rank = cRankManager:GetPlayerRankName(Player:GetUUID())
-	if Rank == "" or Rank == "deop" then
-		cRankManager:SetPlayerRank(Player:GetUUID(), Player:GetName(), "op")
-		Player:LoadRank()
+	if OPMode == true then
+		local Rank = cRankManager:GetPlayerRankName(Player:GetUUID())
+		if Rank == "" or Rank == "deop" then
+			cRankManager:SetPlayerRank(Player:GetUUID(), Player:GetName(), "op")
+			Player:LoadRank()
+		end
 	end
-	Player:GetClientHandle():SendSetTitle(cCompositeChat():AddTextPart(JoinTitle))
-	Player:GetClientHandle():SendSetSubTitle((cCompositeChat():AddTextPart(JoinSubtitle)))
-	Player:GetClientHandle():SendTitleTimes(10, 160, 5)
+	if JoinTitlesActive == true then
+		Player:GetClientHandle():SendSetTitle(cCompositeChat():AddTextPart(cChatColor.LightGray .. TitleText))
+		Player:GetClientHandle():SendSetSubTitle((cCompositeChat():AddTextPart(SubtitleText)))
+		Player:GetClientHandle():SendTitleTimes(10, 160, 5)
+	end
 end
 
 function OnPlayerMoving(Player, OldPosition, NewPosition)
@@ -178,18 +209,18 @@ function OnPlayerMoving(Player, OldPosition, NewPosition)
 			HasTeleported[Player:GetUUID()] = nil
 		elseif not HasTeleported[Player:GetUUID()] then
 			if PortalEnd:IsInside(NewPosition) then
-				MoveToWorld(Player, "end")
+				MoveToWorldPortal(Player, "end")
 			elseif PortalFlatlands:IsInside(NewPosition) then
-				MoveToWorld(Player, "flatlands")
+				MoveToWorldPortal(Player, "flatlands")
 			elseif PortalNether:IsInside(NewPosition) then
-				MoveToWorld(Player, "nether")
+				MoveToWorldPortal(Player, "nether")
 			elseif PortalOverworld:IsInside(NewPosition) then
-				MoveToWorld(Player, "overworld")
+				MoveToWorldPortal(Player, "overworld")
 			end
 		end
 	end
 	local LookPos = GetPlayerLookPos(Player)
-	if LookPos and not Player:GetWorld():DoWithCommandBlockAt(LookPos.x, LookPos.y, LookPos.z,
+	if LookPos and Player:GetWorld():AreCommandBlocksEnabled() and not Player:GetWorld():DoWithCommandBlockAt(LookPos.x, LookPos.y, LookPos.z,
 		function(CommandBlock)
 			if HideOutput[Player:GetUUID()] == nil then
 				if CommandBlock:GetCommand() ~= "" then
@@ -207,7 +238,7 @@ function OnPlayerMoving(Player, OldPosition, NewPosition)
 end
 
 function OnPlayerRightClick(Player, BlockX, BlockY, BlockZ, BlockFace, CursorX, CursorY, CursorZ)
-	if Player:GetWorld():GetBlock(BlockX, BlockY, BlockZ) == E_BLOCK_COMMAND_BLOCK then
+	if Player:GetWorld():GetBlock(BlockX, BlockY, BlockZ) == E_BLOCK_COMMAND_BLOCK and Player:GetWorld():AreCommandBlocksEnabled() then
 		Player:SendMessageInfo("Type the command you want to use in the command block in chat (type \"c\" to cancel):")
 		CommandBlockActive[Player:GetUUID()] = {World = Player:GetWorld(), X = BlockX, Y = BlockY, Z = BlockZ}
 		return true
@@ -238,24 +269,62 @@ function OnTick(TimeDelta)
 	if GlobalTime == 75 then
 		-- Resets different checks
 		ExplosionCount = 0
-		cRoot:Get():ForEachPlayer(
-			function(Player)
-				CanMessage[Player:GetUUID()] = nil
-			end
-		)
+		if ChatAntiSpam == true or CommandAntiSpam == true then
+			cRoot:Get():ForEachPlayer(
+				function(Player)
+					CanMessage[Player:GetUUID()] = nil
+				end
+			)
+		end
 
 		-- If the server is stuck, this file won't update. An OS-side script checks when the file was last modified, and restarts the server if too much time has passed since the last modification.
-		os.remove(".update")
-		file = io.open(".update", "a")
-		file:close()
+		if cRoot:Get():GetWorld("hub") then
+			os.remove(".update")
+			file = io.open(".update", "a")
+			file:close()
+		end
 
 		-- Overwrite spawn by using schematic
-		Area:Write(cRoot:Get():GetWorld("hub"), Area:GetWEOffset().x, 62, Area:GetWEOffset().z, cBlockArea.baTypes + cBlockArea.baMetas)
+		--if cRoot:Get():GetWorld("hub") then
+		--	SpawnArea:Write(cRoot:Get():GetWorld("hub"), SpawnArea:GetWEOffset().x, 62, SpawnArea:GetWEOffset().z, cBlockArea.baTypes + cBlockArea.baMetas)
+		--end
+
+		--if math.floor(cRoot:GetPhysicalRAMUsage() / 1024 + 0.5) > 700 then
+			--os.exit()
+			--cPluginManager:ExecuteConsoleCommand("restart")
+		--end
 
 		GlobalTime = 0
 	else
 		GlobalTime = GlobalTime + 1
 	end
+	--if PingTime == 1200 then
+	--	local Callbacks =
+	--	{
+	--		OnConnected = function (a_Link)
+	--			print("Server is alive")
+	--		end,
+
+	--		OnError = function (a_TCPLink, a_ErrorCode, a_ErrorMsg)
+	--			print("Server network error")
+	--			os.exit()
+	--		end,
+
+	--		OnRemoteClosed = function (a_Link)
+        --                        print("Server network error")
+        --                        os.exit()
+	--		end,
+	--	}
+
+	--	if not cNetwork:Connect("localhost", 64518, Callbacks) then
+	--		print("Server network error")
+	--		os.exit()
+	--	end
+
+	--	PingTime = 0
+	--else
+	--	PingTime = PingTime + 1
+	--end
 end
 
 function OnUpdatingSign(World, BlockX, BlockY, BlockZ, Line1, Line2, Line3, Line4, Player)
@@ -269,18 +338,33 @@ end
 
 -- Prevents players from using WorldEdit in spawn
 function WorldEditCallback(WorldEditCuboid, Player, World, Operation)
-	if World:GetName() == "hub" then
-		return true
-	end
-	if Operation == "addleaves" or Operation == "cut" or Operation == "faces" or Operation == "fill" or Operation == "generate" or Operation == "leafdecay" or Operation == "mirror" or Operation == "paste" or Operation == "stack" or Operation == "vmirror" or Operation == "walls" then
-		if WorldEditCuboid:DifX() > 400 or WorldEditCuboid:DifY() > 400 or WorldEditCuboid:DifZ() > 400 then
-                        Player:SendMessageFailure("Your selection is too large")
-                        return true
-                end
-	else
-		if WorldEditCuboid:DifX() > 100 or WorldEditCuboid:DifY() > 100 or WorldEditCuboid:DifZ() > 100 then
-			Player:SendMessageFailure("Your selection is too large")
+	if WorldEditLimits then
+		if World:GetName() == "hub" then
 			return true
+		end
+		if Operation == "addleaves" or
+		Operation == "cut" or
+		Operation == "emoveabove" or
+		Operation == "emovebelow" or
+		Operation == "faces" or
+		Operation == "fill" or
+		Operation == "generate" or
+		Operation == "leafdecay" or
+		Operation == "mirror" or
+		Operation == "paste" or
+		Operation == "replace" or
+		Operation == "stack" or
+		Operation == "vmirror" or
+		Operation == "walls" then
+			if WorldEditCuboid:DifX() > 400 or WorldEditCuboid:DifY() > 400 or WorldEditCuboid:DifZ() > 400 then
+				Player:SendMessageFailure("Your selection is too large")
+				return true
+			end
+		else
+			if WorldEditCuboid:DifX() > 100 or WorldEditCuboid:DifY() > 100 or WorldEditCuboid:DifZ() > 100 then
+				Player:SendMessageFailure("Your selection is too large")
+				return true
+			end
 		end
 	end
 end

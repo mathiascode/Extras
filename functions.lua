@@ -27,25 +27,24 @@ CooldownCommands = GetValue {
 	"//replacenear",
 	"//schem",
 	"//schematic",
+	"//set",
 	"//snow",
 	"//sphere",
 	"//stack",
 	"//thaw",
-	"/end",
-	"/flatlands",
 	"/green",
 	"/jumpscare",
-	"/kill",
-	"/nether",
-	"/overworld",
+	"/lightning",
 	"/portal",
 	"/pumpkins",
 	"/snow",
-	"/suicide",
 	"/thaw",
 	"/scare",
 	"/setjail",
 	"/setwarp",
+	"/smite",
+	"/strike",
+	"/thor",
 	"/world",
 }
 
@@ -53,12 +52,11 @@ function GetPlayerLookPos(Player)
 	local World = Player:GetWorld()
 	local Start = Player:GetEyePosition()
 	local End = Start + Player:GetLookVector() * 150
-	local HitCoords = nil
 	local Callbacks =
 	{
-		OnNextBlock = function(X, Y, Z, BlockType)
+		OnNextBlock = function(BlockX, BlockY, BlockZ, BlockType)
 			if BlockType ~= E_BLOCK_AIR then
-				HitCoords = {x = X, y = Y, z = Z}
+				HitCoords = {x = BlockX, y = BlockY, z = BlockZ}
 				return true
 			end
 		end
@@ -67,12 +65,41 @@ function GetPlayerLookPos(Player)
 	return HitCoords
 end
 
-function MoveToWorld(Player, World)
+function MoveToWorldCommand(Player, WorldName)
+	local World = cRoot:Get():GetWorld(WorldName)
+	Player:SetPitch(0)
+	Player:SetYaw(0)
+	if Player:GetWorld():GetName() == WorldName then
+		Player:TeleportToCoords(World:GetSpawnX(), World:GetSpawnY(), World:GetSpawnZ())
+	else
+		Player:ScheduleMoveToWorld(World, Vector3d(World:GetSpawnX() + 0.5, World:GetSpawnY(), World:GetSpawnZ() + 0.5), false, true)
+	end
+	Player:SendMessageSuccess("Successfully moved to the " .. WorldName:gsub("^%l", string.upper))
+end
+
+function MoveToWorldPortal(Player, World)
 	local World = cRoot:Get():GetWorld(World)
 	Player:SetPitch(0)
 	Player:SetYaw(0)
 	Player:MoveToWorld(World:GetName())
 	HasTeleported[Player:GetUUID()] = true
+end
+
+function SetCommandBlockCommand(Player, Input)
+	if Input == "c" then
+		CommandBlockActive[Player:GetUUID()] = nil
+	else
+		if not CommandBlockActive[Player:GetUUID()].World:DoWithCommandBlockAt(CommandBlockActive[Player:GetUUID()].X, CommandBlockActive[Player:GetUUID()].Y, CommandBlockActive[Player:GetUUID()].Z,
+			function(CommandBlock)
+				CommandBlock:SetCommand(Input)
+			end
+		) then
+			Player:SendMessageFailure("The selected command block doesn't exist anymore")
+		else
+			Player:SendMessageInfo("The command block command was set to \"" .. Input .. "\"")
+		end
+		CommandBlockActive[Player:GetUUID()] = nil
+	end
 end
 
 function ShowTitle(Player, Title)

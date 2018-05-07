@@ -1,13 +1,20 @@
 g_PluginInfo =
 {
 	Name = "Extras",
-	Version = "3",
-	Date = "2017-08-30",
+	Version = "4",
+	Date = "2018-05-07",
 	SourceLocation = "https://github.com/mathiascode/Extras",
 	Description = [[Plugin for Cuberite that adds extra functionality to the Kaboom.pw server.]],
 
 	Commands =
 	{
+		["/action"] =
+		{
+			Alias = "/describe",
+			Handler = HandleActionCommand,
+			Permission = "extras.action",
+			HelpString = "Broadcasts what you are doing"
+		},
 		["/actionbarbroadcast"] =
 		{
 			Alias = { "/abc", "/abcast", "/actionbarbc", "/actionbarbcast", },
@@ -17,6 +24,7 @@ g_PluginInfo =
 		},
 		["/clearchat"] =
 		{
+			Alias = "/cc",
 			Handler = HandleClearChatCommand,
 			Permission = "extras.clearchat",
 			HelpString = "Clears messages from the chat"
@@ -123,19 +131,18 @@ g_PluginInfo =
 			Permission = "extras.m",
 			HelpString = "Sends a private message to a player"
 		},
-		["/me"] =
-		{
-			Alias = { "/action", "/describe", },
-			Handler = HandleMeCommand,
-			Permission = "extras.me",
-			HelpString = "Broadcasts what you are doing"
-		},
 		["/mem"] =
 		{
 			Alias = "/memory",
 			Handler = HandleMemoryCommand,
 			Permission = "extras.mem",
 			HelpString = "Shows the memory usage of the server"
+		},
+		["/near"] =
+		{
+			Handler = HandleNearCommand,
+			Permission = "extras.near",
+			HelpString = "Shows player near you"
 		},
 		["/nether"] =
 		{
@@ -200,7 +207,6 @@ g_PluginInfo =
 		},
 		["/suicide"] =
 		{
-			Alias = "/kill",
 			Handler = HandleSuicideCommand,
 			Permission = "extras.suicide",
 			HelpString = "Ends your life"
@@ -218,8 +224,8 @@ g_PluginInfo =
 			Permission = "extras.tellraw",
 			HelpString = "Broadcasts raw text to the server"
 		},
-                ["/title"] =
-                {
+		["/title"] =
+		{
 			Handler = HandleTitleCommand,
 			Permission = "extras.title",
 			HelpString = "Broadcasts a title to the server"

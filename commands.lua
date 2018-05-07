@@ -2,6 +2,23 @@
 local Rules = "Do whatever you want! ;)"
 
 -- General
+function HandleActionCommand(Split, Player)
+	if Split[2] == nil then
+		Player:SendMessageInfo("Usage: " .. Split[1] .. " <message ...>")
+	else
+		local PlayerName
+		if NickList[Player:GetUUID()] == nil then
+			PlayerName = Player:GetName()
+		else
+			PlayerName = NickList[Player:GetUUID()]
+		end
+		local Message = table.concat(Split, " ", 2):gsub("&0", cChatColor.Black):gsub("&1", cChatColor.Navy):gsub("&2", cChatColor.Green):gsub("&3", cChatColor.Blue):gsub("&4", cChatColor.Red):gsub("&5", cChatColor.Purple):gsub("&6", cChatColor.Gold):gsub("&7", cChatColor.LightGray):gsub("&8", cChatColor.Gray):gsub("&9", cChatColor.DarkPurple):gsub("&a", cChatColor.LightGreen):gsub("&b", cChatColor.LightBlue):gsub("&c", cChatColor.Rose):gsub("&d", cChatColor.LightPurple):gsub("&e", cChatColor.Yellow):gsub("&f", cChatColor.White):gsub("&k", cChatColor.Random):gsub("&l", cChatColor.Bold):gsub("&m", cChatColor.Strikethrough):gsub("&n", cChatColor.Underlined):gsub("&o", cChatColor.Italic):gsub("&r", cChatColor.Plain)
+
+		cRoot:Get():BroadcastChat("* " .. PlayerName .. " " .. cChatColor.White .. Message)
+	end
+	return true
+end
+
 function HandleActionBarBroadcastCommand(Split, Player)
 	if Split[2] == nil then
 		Player:SendMessageInfo("Usage: " .. Split[1] .. " <message ...>")
@@ -13,17 +30,6 @@ function HandleActionBarBroadcastCommand(Split, Player)
 				OtherPlayer:SendAboveActionBarMessage(Message)
 			end
 		)
-	end
-	return true
-end
-
-function HandleBroadcastCommand(Split, Player)
-	if Split[2] == nil then
-		Player:SendMessageInfo("Usage: " .. Split[1] .. " <message ...>")
-	else
-		--local Message = table.concat(Split, " ", 2)--:gsub("&0", cChatColor.Black):gsub("&1", cChatColor.Navy):gsub("&2", cChatColor.Green):gsub("&3", cChatColor.Blue):gsub("&4", cChatColor.Red):gsub("&5", cChatColor.Purple):gsub("&6", cChatColor.Gold):gsub("&7", cChatColor.LightGray):gsub("&8", cChatColor.Gray):gsub("&9", cChatColor.DarkPurple):gsub("&a", cChatColor.LightGreen):gsub("&b", cChatColor.LightBlue):gsub("&c", cChatColor.Rose):gsub("&d", cChatColor.LightPurple):gsub("&e", cChatColor.Yellow):gsub("&f", cChatColor.White):gsub("&k", cChatColor.Random):gsub("&l", cChatColor.Bold):gsub("&m", cChatColor.Strikethrough):gsub("&n", cChatColor.Underlined):gsub("&o", cChatColor.Italic):gsub("&r", cChatColor.Plain)
-
-		--cRoot:Get():BroadcastChat(cChatColor.Red .. "[BROADCAST] " .. cChatColor.Rose .. Message)
 	end
 	return true
 end
@@ -115,9 +121,9 @@ function HandleJumpscareCommand(Split, Player)
 		OtherPlayer:GetWorld():BroadcastParticleEffect("mobappearance", X, Y, Z, 0, 0, 0, 1, 4)
 		for i=1,10 do
 			if OtherPlayer:GetClientHandle():GetProtocolVersion() <= 47 then
-				OtherPlayer:GetClientHandle():SendSoundEffect("mob.endermen.scream", X, Y, Z, 1, 0)
+				OtherPlayer:GetClientHandle():SendSoundEffect("mob.endermen.scream", Player:GetPosition(), 1, 0)
 			else
-				OtherPlayer:GetClientHandle():SendSoundEffect("entity.endermen.scream", X, Y, Z, 1, 0)
+				OtherPlayer:GetClientHandle():SendSoundEffect("entity.endermen.scream", Player:GetPosition(), 1, 0)
 			end
 		end
 		if not Split[2] == "*" or not Split[2] == "**" then
@@ -130,7 +136,7 @@ function HandleJumpscareCommand(Split, Player)
 		cRoot:Get():ForEachPlayer(Jumpscare)
 		Player:SendMessageSuccess("Successfully created jumpscare for every player")
 	elseif not cRoot:Get():FindAndDoWithPlayer(table.concat(Split, " ", 2), Jumpscare) then
-		Player:SendMessageFailure("Player \"" .. table.concat(Split, " ", 2) ..  "\" not found")
+		Player:SendMessageFailure("Player \"" .. table.concat(Split, " ", 2) .. "\" not found")
 	end
 	return true
 end
@@ -197,28 +203,53 @@ function HandleKitCommand(Split, Player)
 	return true
 end
 
-function HandleMeCommand(Split, Player)
-	if Split[2] == nil then
-		Player:SendMessageInfo("Usage: " .. Split[1] .. " <message ...>")
-	else
-		local PlayerName
-		if NickList[Player:GetUUID()] == nil then
-			PlayerName = Player:GetName()
-		else
-			PlayerName = NickList[Player:GetUUID()]
-		end
-		local Message = table.concat(Split, " ", 2):gsub("&0", cChatColor.Black):gsub("&1", cChatColor.Navy):gsub("&2", cChatColor.Green):gsub("&3", cChatColor.Blue):gsub("&4", cChatColor.Red):gsub("&5", cChatColor.Purple):gsub("&6", cChatColor.Gold):gsub("&7", cChatColor.LightGray):gsub("&8", cChatColor.Gray):gsub("&9", cChatColor.DarkPurple):gsub("&a", cChatColor.LightGreen):gsub("&b", cChatColor.LightBlue):gsub("&c", cChatColor.Rose):gsub("&d", cChatColor.LightPurple):gsub("&e", cChatColor.Yellow):gsub("&f", cChatColor.White):gsub("&k", cChatColor.Random):gsub("&l", cChatColor.Bold):gsub("&m", cChatColor.Strikethrough):gsub("&n", cChatColor.Underlined):gsub("&o", cChatColor.Italic):gsub("&r", cChatColor.Plain)
-
-		cRoot:Get():BroadcastChat("* " .. PlayerName .. " " .. cChatColor.White .. Message)
-	end
-	return true
-end
-
 function HandleMemoryCommand(Split, Player)
 	Player:SendMessageInfo("Current RAM usage: " .. math.floor(cRoot:GetPhysicalRAMUsage() / 1024 + 0.5) .. " MB")
 	Player:SendMessageInfo("Current swap usage: " .. math.floor(cRoot:GetVirtualRAMUsage() / 1024 + 0.5) .. " MB")
 	Player:SendMessageInfo("Total memory usage: " .. math.floor(cRoot:GetPhysicalRAMUsage() / 1024 + cRoot:GetVirtualRAMUsage() / 1024 + 0.5) .. " MB")
 	Player:SendMessageInfo("Current loaded chunks: " .. cRoot:Get():GetTotalChunkCount())
+	return true
+end
+
+function HandleNearCommand(Split, Player)
+	local PlayerTable = {}
+	Player:GetWorld():ForEachPlayer(
+		function(OtherPlayer)
+			local Distance = math.floor((Player:GetPosition() - OtherPlayer:GetPosition()):Length())
+			if tonumber(Split[2]) then
+				DistanceLimit = tonumber(Split[2])
+			else
+				DistanceLimit = 200
+			end
+			if Distance <= DistanceLimit then
+				if OtherPlayer:GetName() ~= Player:GetName() then
+					table.insert(PlayerTable,
+						{
+							Name = OtherPlayer:GetName(),
+							Distance = Distance,
+						}
+					)
+				end
+			end
+		end
+	)
+
+	table.sort(PlayerTable,
+		function (Player1, Player2)
+			return Player1.Distance < Player2.Distance
+		end
+	)
+
+	local String = {}
+	for k, v in ipairs(PlayerTable) do
+		table.insert(String, v.Name)
+		table.insert(String, " " .. cChatColor.Plain .. "(")
+		table.insert(String, v.Distance)
+		table.insert(String, "m), ")
+	end
+
+	local String = table.concat(String, "")
+	Player:SendMessageInfo("Players nearby: " .. cChatColor.Plain .. String:sub(1, String:len() - 2))
 	return true
 end
 
@@ -255,7 +286,7 @@ function HandlePumpkinCommand(Split, Player)
 	return true
 end
 
-function HandleRestartCommand( Split, Player )
+function HandleRestartCommand(Split, Player)
 	cRoot:Get():BroadcastChat(cChatColor.Red .. "[WARNING] " .. cChatColor.White .. "Server is restarting!")
 	return true
 end
@@ -267,20 +298,17 @@ end
 
 function HandleSpideyCommand(Split, Player)
 	local World = Player:GetWorld()
-	local WorldName = Player:GetWorld():GetName()
-	local Callbacks = {
+	local Start = Player:GetEyePosition() + Player:GetLookVector() * 2
+	local End = Start + Player:GetLookVector() * 50
+	local Callbacks =
+	{
 		OnNextBlock = function(BlockX, BlockY, BlockZ, BlockType, BlockMeta)
-			if BlockType ~= E_BLOCK_AIR or WorldName == "hub" then
+			if BlockType ~= E_BLOCK_AIR or World:GetName() == "hub" then
 				return true
 			end
 			World:SetBlock(BlockX, BlockY, BlockZ, E_BLOCK_COBWEB, 0)
 		end
 	}
-	local EyePos = Player:GetEyePosition()
-	local LookVector = Player:GetLookVector()
-	LookVector:Normalize()
-	local Start = EyePos + LookVector + LookVector
-	local End = EyePos + LookVector * 50
 	cLineBlockTracer.Trace(World, Callbacks, Start.x, Start.y, Start.z, End.x, End.y, End.z)
 	return true
 end
@@ -307,6 +335,9 @@ function HandleStarveCommand(Split, Player)
 end
 
 function HandleSuicideCommand(Split, Player)
+	Player:TakeDamage(dtInVoid, nil, 1000, 1000, 0)
+	Player:TakeDamage(dtInVoid, nil, 1000, 1000, 0)
+	Player:TakeDamage(dtInVoid, nil, 1000, 1000, 0)
 	Player:TakeDamage(dtInVoid, nil, 1000, 1000, 0)
 	return true
 end
@@ -376,18 +407,8 @@ function HandleVoteCommand(Split, Player)
 end
 
 -- Shortcuts
-function HandleAdventureCommand(Split, Player)
-	cPluginManager:Get():ExecuteCommand(Player, "/gamemode 2 " .. table.concat(Split, " ", 2))
-	return true
-end
-
 function HandleClearinventoryCommand(Split, Player)
 	cPluginManager:Get():ExecuteCommand(Player, "/clear " .. table.concat(Split, " ", 2))
-	return true
-end
-
-function HandleCreativeCommand(Split, Player)
-	cPluginManager:Get():ExecuteCommand(Player, "/gamemode 1 " .. table.concat(Split, " ", 2))
 	return true
 end
 
@@ -447,16 +468,6 @@ function HandleReplyCommand(Split, Player)
 	return true 
 end
 
-function HandleSpectatorCommand(Split, Player)
-	cPluginManager:Get():ExecuteCommand(Player, "/gamemode 3 " .. table.concat(Split, " ", 2))
-	return true
-end
-
-function HandleSurvivalCommand(Split, Player)
-	cPluginManager:Get():ExecuteCommand(Player, "/gamemode 0 " .. table.concat(Split, " ", 2))
-	return true
-end
-
 function HandleTeleCommand(Split, Player)
 	if Split[2] == nil or #Split > 4 then
 		Player:SendMessageInfo("Usage: " .. Split[1] .. " <player> [-h]")
@@ -500,79 +511,26 @@ end
 
 -- Worlds
 function HandleEndCommand(Split, Player)
-	local World = cRoot:Get():GetWorld("end")
-	Player:SetPitch(0)
-	Player:SetYaw(0)
-	if Player:GetWorld():GetName() == "end" then
-		Player:TeleportToCoords(World:GetSpawnX(), World:GetSpawnY(), World:GetSpawnZ())
-	else
-	--	Player:MoveToWorld("end")
-                        local World = cRoot:Get():GetWorld("end")
-                        Player:ScheduleMoveToWorld(World, Vector3d(World:GetSpawnX() + 0.5, World:GetSpawnY(), World:GetSpawnZ() + 0.5))
-	end
-	Player:SendMessageSuccess("Successfully moved to the End")
+	MoveToWorldCommand(Player, "end")
 	return true
 end
 
 function HandleFlatlandsCommand(Split, Player)
-	local World = cRoot:Get():GetWorld("flatlands")
-	Player:SetPitch(0)
-	Player:SetYaw(0)
-	if Player:GetWorld():GetName() == "flatlands" then
-		Player:TeleportToCoords(World:GetSpawnX(), World:GetSpawnY(), World:GetSpawnZ())
-	else--if Player:IsTicking() then
-	--	Player:MoveToWorld("flatlands")
-                        local World = cRoot:Get():GetWorld("flatlands")
-                        Player:ScheduleMoveToWorld(World, Vector3d(World:GetSpawnX() + 0.5, World:GetSpawnY(), World:GetSpawnZ() + 0.5))
-	end
-	Player:SendMessageSuccess("Successfully moved to the Flatlands")
+	MoveToWorldCommand(Player, "flatlands")
 	return true
 end
 
 function HandleHubCommand(Split, Player)
-	local World = cRoot:Get():GetWorld("hub")
-	Player:SetPitch(0)
-	Player:SetYaw(0)
-	if Player:GetWorld():GetName() == "hub" then
-		Player:TeleportToCoords(World:GetSpawnX(), World:GetSpawnY(), World:GetSpawnZ())
-	else
-	--	Player:MoveToWorld("hub")
-                        local World = cRoot:Get():GetWorld("hub")
-                        Player:ScheduleMoveToWorld(World, Vector3d(World:GetSpawnX() + 0.5, World:GetSpawnY(), World:GetSpawnZ() + 0.5))
-	end
-	Player:SendMessageSuccess("Successfully moved to the Hub")
+	MoveToWorldCommand(Player, "hub")
 	return true
 end
 
 function HandleNetherCommand(Split, Player)
-	local World = cRoot:Get():GetWorld("nether")
-	Player:SetPitch(0)
-	Player:SetYaw(0)
-	if Player:GetWorld():GetName() == "nether" then
-		Player:TeleportToCoords(World:GetSpawnX(), World:GetSpawnY(), World:GetSpawnZ())
-	else
-	--	Player:MoveToWorld("nether")
-                        local World = cRoot:Get():GetWorld("nether")
-                        Player:ScheduleMoveToWorld(World, Vector3d(World:GetSpawnX() + 0.5, World:GetSpawnY(), World:GetSpawnZ() + 0.5))
-	end
-	Player:SendMessageSuccess("Successfully moved to the Nether")
+	MoveToWorldCommand(Player, "nether")
 	return true
 end
 
 function HandleOverworldCommand(Split, Player)
-	local World = cRoot:Get():GetWorld("overworld")
-	Player:SetPitch(0)
-	Player:SetYaw(0)
-	if Player:GetWorld():GetName() == "overworld" then
-		Player:TeleportToCoords(World:GetSpawnX(), World:GetSpawnY(), World:GetSpawnZ())
-	else
-	--	Player:MoveToWorld("overworld")
-                        local World = cRoot:Get():GetWorld("overworld")
-                        Player:ScheduleMoveToWorld(World, Vector3d(World:GetSpawnX() + 0.5, World:GetSpawnY(), World:GetSpawnZ() + 0.5))
-	--		Player:MoveToWorld("overworld")
-	--		Player:MoveToWorld("overworld")
-			-- Player:ScheduleMoveToWorld(World, Vector3d(World:GetSpawnX() + 0.5, World:GetSpawnY(), World:GetSpawnZ() + 0.5))
-	end
-	Player:SendMessageSuccess("Successfully moved to the Overworld")
+	MoveToWorldCommand(Player, "overworld")
 	return true
 end
